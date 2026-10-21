@@ -1,0 +1,57 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go: ['1.25.x', '1.27.x']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: go.sum
+      - run: go mod download
+      - run: go test ./...
+      - run: go vet ./...
+      - name: Race detector
+        if: runner.os == 'Linux'
+        run: go test -race -short ./...
+  generated-and-portability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.x'
+          cache-dependency-path: go.sum
+      - name: Formatting and generated types
+        run: |
+          test -z "$(gofmt -l .)"
+          python3 scripts/generate.py
+          gofmt -w types_generated.go sources_generated.go
+          git diff --exit-code -- types_generated.go sources_generated.go
+      - name: Cross-compile example consumer without CGo
+        env:
+          CGO_ENABLED: '0'
+        run: |
+          mkdir -p dist
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64; do
+            export GOOS="${target%/*}" GOARCH="${target#*/}"
+            go build -o "dist/consumer-${GOOS}-${GOARCH}" ./examples/google_search
+          done
+      - name: Inspect module archive and clean consumer
+        run: python3 scripts/verify_package.py --go "$(command -v go)" --dependency-cache "$(go env GOMODCACHE)"
+      - name: Release manifest regressions
+        run: python3 -m unittest discover -s scripts -p "test_*.py"

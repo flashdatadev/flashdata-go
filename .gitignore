@@ -1,0 +1,16 @@
+/dist/
+/.cache/
+/.tools/
+.env
+.env.*
+!.env.example
+*.test
+coverage.out
+
+*.job.json
+/results*.jsonl
+/receipts*.jsonl
+/download-results.jsonl
+/storage.json
+/ids.txt
+__pycache__/

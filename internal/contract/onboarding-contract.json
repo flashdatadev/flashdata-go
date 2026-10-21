@@ -1,0 +1,2319 @@
+{
+  "paths": {
+    "/api-access/identity": {
+      "get": {
+        "operationId": "getApiKeyIdentity",
+        "tags": [
+          "API Keys"
+        ],
+        "summary": "Verify current API key ownership and recurring readiness",
+        "description": "Free header-only API-key read. Returns public account/key IDs and authoritative ownership. No request body. Does not alter the existing /api-access metadata response. Shares the 120/minute account-read limit. Fail closed on unavailability; do not infer ownership from key prefix, plan, or local state. No query parameters are accepted. Responses are no-store.",
+        "security": [
+          {
+            "dataApiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verify current API key ownership and recurring readiness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIKeyIdentity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/capabilities": {
+      "get": {
+        "operationId": "getAgentCapabilities",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Discover protocol 2 onboarding availability",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Discover protocol 2 onboarding availability",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentCapabilities"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/registrations": {
+      "post": {
+        "operationId": "registerAgentConnection",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Create or recover a temporary API-key connection",
+        "description": "Persist the registration proof and exact input before POST. Same proof and body recover the same trial; changing input yields conflict. Temporary trial: 1 Credit, 72 hours, 1 request/second, batch size 1. Source scope limits remain authoritative on the server. No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentRegistrationProof": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Create or recover a temporary API-key connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentRegistration"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentRegistrationRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/owned": {
+      "get": {
+        "operationId": "listOwnedAgentConnections",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "List browser-owned connections",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes. Browser-owned operation. Full verified Session required; caller must not substitute an API key or proof.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List browser-owned connections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "connections": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AgentConnection"
+                      }
+                    }
+                  },
+                  "required": [
+                    "connections"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "x-session-modes": [
+          "full"
+        ]
+      }
+    },
+    "/agent-connections/{connectionId}": {
+      "get": {
+        "operationId": "getTemporaryAgentConnection",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Read temporary connection status",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentSetupCredential": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read temporary connection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentConnectionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "revokeAgentConnection",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Revoke an owned connection",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes. Browser-owned operation. Full verified Session required; caller must not substitute an API key or proof.",
+        "security": [
+          {
+            "cookieSession": [],
+            "csrfToken": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Revoke an owned connection"
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "x-session-modes": [
+          "full"
+        ],
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/agent-connections/{connectionId}/identity": {
+      "get": {
+        "operationId": "getAgentConnectionIdentity",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Verify the current data API key for a connection",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentIdentityKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verify the current data API key for a connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentConnectionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ]
+      }
+    },
+    "/agent-connections/{connectionId}/onboarding": {
+      "get": {
+        "operationId": "getAgentOnboardingStatus",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Read recoverable onboarding state",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentHandoffProof": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read recoverable onboarding state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentOnboardingStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ]
+      }
+    },
+    "/agent-connections/{connectionId}/claims": {
+      "post": {
+        "operationId": "createAgentClaim",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Create a browser approval claim",
+        "description": "Open claimPath on a trusted FlashData web origin and display the code separately. Never place credentials or the confirmation code in the URL. No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentSetupCredential": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Create a browser approval claim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentClaim"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {},
+                "required": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/claims/{claimId}/confirm": {
+      "post": {
+        "operationId": "confirmAgentClaim",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Confirm the claim code in a verified browser session",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes. Browser-owned operation. Full verified Session required; caller must not substitute an API key or proof.",
+        "security": [
+          {
+            "cookieSession": [],
+            "csrfToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirm the claim code in a verified browser session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentBrowserClaim"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "x-session-modes": [
+          "full"
+        ],
+        "parameters": [
+          {
+            "name": "claimId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acl_[A-Za-z0-9_-]{8,100}$"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^\\d{8}$"
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/claims/{claimId}": {
+      "get": {
+        "operationId": "getAgentClaim",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Read a confirmed claim in its browser session",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes. Browser-owned operation. Full verified Session required; caller must not substitute an API key or proof.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read a confirmed claim in its browser session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentClaimView"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "x-session-modes": [
+          "full"
+        ],
+        "parameters": [
+          {
+            "name": "claimId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acl_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ]
+      }
+    },
+    "/agent-connections/claims/{claimId}/approve": {
+      "post": {
+        "operationId": "approveAgentClaim",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Approve reduced scopes and account-balance funding",
+        "description": " No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes. Browser-owned operation. Full verified Session required; caller must not substitute an API key or proof.",
+        "security": [
+          {
+            "cookieSession": [],
+            "csrfToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Approve reduced scopes and account-balance funding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "connection": {
+                      "$ref": "#/components/schemas/AgentConnection"
+                    },
+                    "handoff": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "status": {
+                          "type": "string"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "expiresAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "connection",
+                    "handoff"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "x-session-modes": [
+          "full"
+        ],
+        "parameters": [
+          {
+            "name": "claimId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acl_[A-Za-z0-9_-]{8,100}$"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentApproval"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/{connectionId}/handoff": {
+      "post": {
+        "operationId": "deliverAgentHandoff",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Recover the approved owner API key",
+        "description": "Candidate key expires in 24 hours until installation ACK. Persist atomically, reload in a fresh process and verify identity before ACK. A repeated delivery recovers the same candidate; confirmed delivery returns a receipt without credentials. No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentHandoffProof": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recover the approved owner API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentHandoff"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {},
+                "required": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-connections/{connectionId}/handoff/ack": {
+      "post": {
+        "operationId": "acknowledgeAgentHandoff",
+        "tags": [
+          "Agent Connections"
+        ],
+        "summary": "Acknowledge verified owner-key installation",
+        "description": "Caller must already have saved the candidate and independently verified it in a fresh process. Successful ACK marks installed, removes the candidate key expiry and deletes recoverable credential material. Repeated ACK is idempotent. No query parameters are accepted. Responses are no-store. Agent routes are management-only and feature-gated; deployments can return 404 when disabled. X-API-Key is forbidden on agent routes.",
+        "security": [
+          {
+            "agentHandoffProof": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Acknowledge verified owner-key installation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentHandoff"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Rejected request; inspect the Problem code. Never retry a mutation blindly.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^acn_[A-Za-z0-9_-]{8,100}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "schemas": {
+    "APIKeyIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "apiKeyId": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "accountType": {
+          "type": "string",
+          "enum": [
+            "owned",
+            "temporary"
+          ]
+        },
+        "ownership": {
+          "type": "string",
+          "enum": [
+            "owned",
+            "unowned"
+          ]
+        },
+        "access": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "blocked"
+          ]
+        },
+        "installed": {
+          "type": "boolean"
+        },
+        "recurringAllowed": {
+          "type": "boolean"
+        },
+        "connectionId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expiresAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "apiKeyId",
+        "accountId",
+        "accountType",
+        "ownership",
+        "access",
+        "installed",
+        "recurringAllowed",
+        "connectionId",
+        "scopes",
+        "expiresAt",
+        "verifiedAt"
+      ],
+      "description": "Authoritative current-record ownership and readiness. Public IDs only. recurringAllowed requires a verified active owner and, for agent-issued keys, server-confirmed installation. It is a point-in-time check, not an authorization token or permission to reuse cached data after revocation."
+    },
+    "AgentConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "coding",
+            "personal",
+            "unspecified"
+          ]
+        },
+        "ownership": {
+          "type": "string",
+          "enum": [
+            "owned",
+            "unowned"
+          ]
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": [
+            "valid",
+            "revoked",
+            "expired"
+          ]
+        },
+        "access": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "fenced",
+            "blocked"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "installed": {
+          "type": "boolean"
+        },
+        "trialExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fundingMode": {
+          "type": "string",
+          "enum": [
+            "trial",
+            "account_balance"
+          ]
+        },
+        "trialCredits": {
+          "type": "number"
+        },
+        "trialRequestCounts": {}
+      },
+      "required": [
+        "id",
+        "name",
+        "audience",
+        "ownership",
+        "lifecycle",
+        "access",
+        "scopes",
+        "generation",
+        "installed",
+        "trialExpiresAt",
+        "fundingMode",
+        "trialCredits",
+        "trialRequestCounts"
+      ]
+    },
+    "AgentCredentials": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connectionId": {
+          "type": "string"
+        },
+        "apiKey": {
+          "type": "string"
+        },
+        "setupCredential": {
+          "type": "string"
+        },
+        "handoffProof": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "connectionId",
+        "apiKey",
+        "generation"
+      ],
+      "description": "Sensitive ordinary API-key credentials. Never log or put in browser URLs. Proofs are returned on temporary registration; handoff returns the owned candidate key."
+    },
+    "AgentRegistrationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "coding",
+            "personal"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,80}$"
+          }
+        },
+        "client": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+        },
+        "transport": {
+          "type": "string",
+          "enum": [
+            "api",
+            "cli",
+            "mcp"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "scopes"
+      ]
+    },
+    "AgentRegistration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/AgentConnection"
+        },
+        "credentials": {
+          "$ref": "#/components/schemas/AgentCredentials"
+        },
+        "dataOrigin": {
+          "type": "string"
+        },
+        "deniedScopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "connection",
+        "credentials",
+        "dataOrigin",
+        "deniedScopes",
+        "limits"
+      ]
+    },
+    "AgentCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocolVersion": {
+          "const": 2
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "flow": {
+          "const": "temporary_account_api_key"
+        },
+        "dataOrigin": {
+          "type": "string"
+        },
+        "queryPath": {
+          "const": "/v1/queries/realtime"
+        },
+        "credentialType": {
+          "const": "api_key"
+        },
+        "trial": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "credits": {
+              "type": "number"
+            },
+            "lifetimeHours": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "requestsPerSecond": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxBatchSize": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "requestCounts": {}
+          },
+          "required": [
+            "credits",
+            "lifetimeHours",
+            "requestsPerSecond",
+            "maxBatchSize",
+            "requestCounts"
+          ]
+        },
+        "recurringRequires": {
+          "const": "owned_key_installed"
+        },
+        "replayProtection": {
+          "const": "client_local_only"
+        }
+      },
+      "required": [
+        "protocolVersion",
+        "available"
+      ]
+    },
+    "AgentClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "claimId": {
+          "type": "string"
+        },
+        "claimPath": {
+          "type": "string"
+        },
+        "confirmationCode": {
+          "type": "string",
+          "pattern": "^\\d{8}$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pollAfterSeconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "claimId",
+        "claimPath",
+        "confirmationCode",
+        "expiresAt",
+        "pollAfterSeconds"
+      ]
+    },
+    "AgentOnboardingStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "awaiting_claim",
+            "claim_processing",
+            "handoff_ready",
+            "installed",
+            "handoff_expired",
+            "expired",
+            "revoked",
+            "blocked"
+          ]
+        },
+        "connection": {
+          "$ref": "#/components/schemas/AgentConnection"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nextAction": {
+          "type": "string"
+        },
+        "pollAfterSeconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "AgentHandoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "delivered",
+            "confirmed"
+          ]
+        },
+        "connection": {
+          "$ref": "#/components/schemas/AgentConnection"
+        },
+        "credentials": {
+          "$ref": "#/components/schemas/AgentCredentials"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "AgentConnectionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/AgentConnection"
+        }
+      },
+      "required": [
+        "connection"
+      ]
+    },
+    "AgentBrowserClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/AgentConnection"
+        },
+        "claimId": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "connection",
+        "claimId",
+        "expiresAt"
+      ]
+    },
+    "AgentApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowAccountBalance": {
+          "const": true
+        }
+      },
+      "required": [
+        "scopes",
+        "allowAccountBalance"
+      ]
+    },
+    "AgentClaimView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/AgentConnection"
+        },
+        "handoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "securitySchemes": {
+    "agentRegistrationProof": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Persist a cryptographically random 32-byte base64url proof and exact request BEFORE sending; recover only with the same proof and body. Not an OAuth token."
+    },
+    "agentSetupCredential": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Temporary setup credential for status and claim creation only. Not a data API key."
+    },
+    "agentHandoffProof": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Proof used to recover the owner key and acknowledge installation. Never sent to a data query."
+    },
+    "agentIdentityKey": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Ordinary FlashData API key in Authorization Bearer, only on agent identity. Data queries use X-API-Key instead."
+    }
+  }
+}
