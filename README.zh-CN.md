@@ -1,10 +1,10 @@
 # FlashData Go
 
-[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [价格](https://flashdata.dev/pricing)
+[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [价格](https://flashdata.dev/pricing) · [v1.0.0 正式版](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)
 
 [FlashData](https://flashdata.dev) 的 Go SDK，通过统一 API 获取结构化 Google 搜索与 YouTube 数据。支持搜索、图片、新闻、购物、视频和地点，以及 YouTube 元数据、转录、字幕、频道、搜索建议和许可标签；媒体下载可直接交付到您自己的云存储。适用于 Go 后端团队、搜索与 AI 应用、研究人员和数据流水线，[FlashData CLI](https://github.com/flashdatadev/flashdata-cli) 已基于此 SDK 构建。
 
-**版本 1.0.0。** `v1.0.0` 源码标签标识此版本；GitHub Release 附件正在以未发布草稿形式准备。本项目没有部署配套的后端身份补丁。 需要 Go 1.25 或更高版本。现有 24 个开发者 API 操作和 15 个数据源与 Python、TypeScript SDK 对齐；新增密钥身份验证与代理接入能力，详见[契约状态](docs/api-contract.md)。
+**版本 1.0.0。** 可通过 Go 安装此标签版本，或从 [v1.0.0 正式版](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)下载模块归档及校验和。本项目没有部署配套的后端身份补丁。 需要 Go 1.25 或更高版本。现有 24 个开发者 API 操作和 15 个数据源与 Python、TypeScript SDK 对齐；新增密钥身份验证与代理接入能力，详见[契约状态](docs/api-contract.md)。
 
 ## 安装
 
@@ -19,7 +19,7 @@ go get github.com/flashdatadev/flashdata-go@v1.0.0
 运行仓库示例或从源码开发 SDK：
 
 ```bash
-git clone https://github.com/flashdatadev/flashdata-go.git
+git clone --branch v1.0.0 --depth 1 https://github.com/flashdatadev/flashdata-go.git
 cd flashdata-go
 go mod download
 ```

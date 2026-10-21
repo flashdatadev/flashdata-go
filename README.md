@@ -1,10 +1,10 @@
 # FlashData Go
 
-[简体中文](README.zh-CN.md) · [FlashData](https://flashdata.dev) · [API docs](https://flashdata.dev/docs) · [Pricing](https://flashdata.dev/pricing)
+[简体中文](README.zh-CN.md) · [FlashData](https://flashdata.dev) · [API docs](https://flashdata.dev/docs) · [Pricing](https://flashdata.dev/pricing) · [Release v1.0.0](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)
 
 The Go SDK for [FlashData](https://flashdata.dev): structured Google search and YouTube data through one API. Retrieve search results, images, news, shopping, videos and places; collect YouTube metadata, transcripts, captions, channel data, suggestions and license labels; deliver media downloads to your own cloud storage. Built for Go backend teams, search and AI applications, researchers, and data pipelines. The [FlashData CLI](https://github.com/flashdatadev/flashdata-cli) is built on this SDK.
 
-**Version 1.0.0.** The `v1.0.0` source tag identifies this version; GitHub Release assets are being prepared as an unpublished draft. The accompanying backend identity patch has not been deployed by this project. Go 1.25 or newer is required. The existing 24 developer operations and 15 sources match the Python and TypeScript SDKs. Verified key identity and onboarding are additional Go capabilities; see [contract status](docs/api-contract.md).
+**Version 1.0.0.** Install the tagged SDK with Go, or download the module archive and checksums from the [v1.0.0 release](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0). The accompanying backend identity patch has not been deployed by this project. Go 1.25 or newer is required. The existing 24 developer operations and 15 sources match the Python and TypeScript SDKs. Verified key identity and onboarding are additional Go capabilities; see [contract status](docs/api-contract.md).
 
 ## Installation
 
@@ -19,7 +19,7 @@ Commit the resulting `go.mod` and `go.sum` to pin SDK v1.0.0 and its verified ch
 To run the shipped examples or develop the SDK from source:
 
 ```bash
-git clone https://github.com/flashdatadev/flashdata-go.git
+git clone --branch v1.0.0 --depth 1 https://github.com/flashdatadev/flashdata-go.git
 cd flashdata-go
 go mod download
 ```
