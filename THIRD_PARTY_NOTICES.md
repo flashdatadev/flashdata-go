@@ -2,7 +2,7 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
-License and notice texts copied from the pinned dependency sources used by this local candidate. FlashData source is covered by [LICENSE](LICENSE). These copies do not change upstream license terms.
+License and notice texts copied from the pinned dependency sources used by version 1.0.0. FlashData source is covered by [LICENSE](LICENSE). These copies do not change upstream license terms.
 
 | Component | Version | License / notice text |
 | --- | --- | --- |

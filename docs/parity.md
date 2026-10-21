@@ -2,7 +2,7 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
-| Capability | Python 1.0.0 | TypeScript 1.0.0 | Go local 1.0.0 candidate |
+| Capability | Python 1.0.0 | TypeScript 1.0.0 | Go 1.0.0 |
 | --- | --- | --- | --- |
 | Existing developer REST operations | 24 | 24 | Same 24 |
 | Source schemas | 15 | Same | Byte-equivalent parsed source schemas |

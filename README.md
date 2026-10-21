@@ -4,17 +4,17 @@
 
 The Go SDK for [FlashData](https://flashdata.dev): structured Google search and YouTube data through one API. Retrieve search results, images, news, shopping, videos and places; collect YouTube metadata, transcripts, captions, channel data, suggestions and license labels; deliver media downloads to your own cloud storage. Built for Go backend teams, search and AI applications, researchers, and data pipelines. The [FlashData CLI](https://github.com/flashdatadev/flashdata-cli) is built on this SDK.
 
-**Unreleased 1.0.0 candidate.** Source is available on GitHub; no version tag or GitHub Release has been published. The accompanying backend identity patch has not been deployed by this project. Go 1.25 or newer is required. The existing 24 developer operations and 15 sources match the Python and TypeScript SDKs. Verified key identity and onboarding are additional Go capabilities; see [contract status](docs/api-contract.md).
+**Version 1.0.0.** The `v1.0.0` source tag identifies this version; GitHub Release assets are being prepared as an unpublished draft. The accompanying backend identity patch has not been deployed by this project. Go 1.25 or newer is required. The existing 24 developer operations and 15 sources match the Python and TypeScript SDKs. Verified key identity and onboarding are additional Go capabilities; see [contract status](docs/api-contract.md).
 
 ## Installation
 
 From your application's Go module:
 
 ```bash
-go get github.com/flashdatadev/flashdata-go@latest
+go get github.com/flashdatadev/flashdata-go@v1.0.0
 ```
 
-Before the first stable tag, Go resolves `@latest` to a commit-based pseudo-version. Commit the resulting `go.mod` and `go.sum` to pin that source revision. No `v1.0.0` tag or release is available yet.
+Commit the resulting `go.mod` and `go.sum` to pin SDK v1.0.0 and its verified checksums. Go installs from the public source tag independently of GitHub Release publication. See the [v1.0.0 release notes](docs/release-notes-1.0.0.md).
 
 To run the shipped examples or develop the SDK from source:
 

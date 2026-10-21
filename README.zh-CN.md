@@ -4,17 +4,17 @@
 
 [FlashData](https://flashdata.dev) 的 Go SDK，通过统一 API 获取结构化 Google 搜索与 YouTube 数据。支持搜索、图片、新闻、购物、视频和地点，以及 YouTube 元数据、转录、字幕、频道、搜索建议和许可标签；媒体下载可直接交付到您自己的云存储。适用于 Go 后端团队、搜索与 AI 应用、研究人员和数据流水线，[FlashData CLI](https://github.com/flashdatadev/flashdata-cli) 已基于此 SDK 构建。
 
-**当前为尚未正式发布的 1.0.0 候选版本。** 源码已公开在 GitHub，尚未创建版本标签或 GitHub Release；本项目没有部署配套的后端身份补丁。 需要 Go 1.25 或更高版本。现有 24 个开发者 API 操作和 15 个数据源与 Python、TypeScript SDK 对齐；新增密钥身份验证与代理接入能力，详见[契约状态](docs/api-contract.md)。
+**版本 1.0.0。** `v1.0.0` 源码标签标识此版本；GitHub Release 附件正在以未发布草稿形式准备。本项目没有部署配套的后端身份补丁。 需要 Go 1.25 或更高版本。现有 24 个开发者 API 操作和 15 个数据源与 Python、TypeScript SDK 对齐；新增密钥身份验证与代理接入能力，详见[契约状态](docs/api-contract.md)。
 
 ## 安装
 
 在您自己的 Go 应用模块中执行：
 
 ```bash
-go get github.com/flashdatadev/flashdata-go@latest
+go get github.com/flashdatadev/flashdata-go@v1.0.0
 ```
 
-首次稳定版本标签发布前，Go 会把 `@latest` 解析为基于提交的伪版本。提交生成的 `go.mod` 与 `go.sum`，即可锁定源码修订；目前尚无 `v1.0.0` 标签或正式版本。
+提交生成的 `go.mod` 与 `go.sum`，即可锁定 SDK v1.0.0 及其已验证校验和。Go 直接从公开源码标签安装，不依赖 GitHub Release 是否发布。详见 [v1.0.0 版本说明](docs/release-notes-1.0.0.md)。
 
 运行仓库示例或从源码开发 SDK：
 

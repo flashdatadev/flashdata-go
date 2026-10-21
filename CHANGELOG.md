@@ -2,9 +2,9 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
-## 1.0.0 — unreleased
+## 1.0.0 — GitHub Release draft
 
-Initial Go SDK with all 15 sources; realtime, async and batch; standard and bulk jobs; signed uploads and streaming results; account/public reads; verified API-key ownership; protocol-2 machine onboarding; typed inputs, response models and provider payload hints; English/简体中文 documentation; runnable examples and offline tests. No release or registry publication has been performed.
+Initial Go SDK with all 15 sources; realtime, async and batch; standard and bulk jobs; signed uploads and streaming results; account/public reads; verified API-key ownership; protocol-2 machine onboarding; typed inputs, response models and provider payload hints; English/简体中文 documentation; runnable examples and offline tests. The source version is tagged v1.0.0; the GitHub Release remains an unpublished draft.
 
 Review fixes: isolated bearer authentication from key authentication, redacted signed-storage credentials and diagnostic formatting, preserved cancellation during bulk reads, checked response identity/generation and retained valid recovery IDs on inconsistent submission responses. Examples now reserve recovery paths before submission, sync accepted IDs and upload validated snapshots. Added boundary/recovery regressions and a backend contract checker.
 
