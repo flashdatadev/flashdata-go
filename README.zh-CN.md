@@ -1,6 +1,6 @@
 # FlashData Go
 
-[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [价格](https://flashdata.dev/pricing) · [v1.0.0 正式版](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)
+[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [Go API 参考](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0) · [价格](https://flashdata.dev/pricing) · [v1.0.0 正式版](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)
 
 [FlashData](https://flashdata.dev) 的 Go SDK，通过统一 API 获取结构化 Google 搜索与 YouTube 数据。支持搜索、图片、新闻、购物、视频和地点，以及 YouTube 元数据、转录、字幕、频道、搜索建议和许可标签；媒体下载可直接交付到您自己的云存储。适用于 Go 后端团队、搜索与 AI 应用、研究人员和数据流水线，[FlashData CLI](https://github.com/flashdatadev/flashdata-cli) 已基于此 SDK 构建。
 
@@ -15,6 +15,8 @@ go get github.com/flashdatadev/flashdata-go@v1.0.0
 ```
 
 提交生成的 `go.mod` 与 `go.sum`，即可锁定 SDK v1.0.0 及其已验证校验和。Go 直接从公开源码标签安装，不依赖 GitHub Release 是否发布。详见 [v1.0.0 版本说明](docs/release-notes-1.0.0.md)。
+
+SDK v1.0.0 已可通过 [Go 公共模块代理](https://proxy.golang.org/github.com/flashdatadev/flashdata-go/@v/list)下载，自动生成的 API 参考及示例见 [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0)。安装无需单独注册包仓库账户。
 
 运行仓库示例或从源码开发 SDK：
 

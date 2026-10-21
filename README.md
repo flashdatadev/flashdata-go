@@ -1,6 +1,6 @@
 # FlashData Go
 
-[简体中文](README.zh-CN.md) · [FlashData](https://flashdata.dev) · [API docs](https://flashdata.dev/docs) · [Pricing](https://flashdata.dev/pricing) · [Release v1.0.0](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)
+[简体中文](README.zh-CN.md) · [FlashData](https://flashdata.dev) · [API docs](https://flashdata.dev/docs) · [Go reference](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0) · [Pricing](https://flashdata.dev/pricing) · [Release v1.0.0](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.0.0)
 
 The Go SDK for [FlashData](https://flashdata.dev): structured Google search and YouTube data through one API. Retrieve search results, images, news, shopping, videos and places; collect YouTube metadata, transcripts, captions, channel data, suggestions and license labels; deliver media downloads to your own cloud storage. Built for Go backend teams, search and AI applications, researchers, and data pipelines. The [FlashData CLI](https://github.com/flashdatadev/flashdata-cli) is built on this SDK.
 
@@ -15,6 +15,8 @@ go get github.com/flashdatadev/flashdata-go@v1.0.0
 ```
 
 Commit the resulting `go.mod` and `go.sum` to pin SDK v1.0.0 and its verified checksums. Go installs from the public source tag independently of GitHub Release publication. See the [v1.0.0 release notes](docs/release-notes-1.0.0.md).
+
+SDK v1.0.0 is available through [Go's public module proxy](https://proxy.golang.org/github.com/flashdatadev/flashdata-go/@v/list), with generated API documentation and examples on [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0). No separate package-registry signup is required to install it.
 
 To run the shipped examples or develop the SDK from source:
 
