@@ -22,6 +22,7 @@
   "docs/release-readiness.md",
   "docs/release.md",
   "docs/review.md",
+  "docs/sdk-parity.md",
   "docs/snippets/bulk-download.go.txt",
   "docs/sources.md",
   "docs/validation.md",

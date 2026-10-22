@@ -2,6 +2,8 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
+See the [current SDK and CLI comparison](sdk-parity.md) for all language entry points, README workflows and recovery behavior.
+
 | Capability | Python 1.0.0 | TypeScript 1.0.0 | Go 1.0.0 |
 | --- | --- | --- | --- |
 | Existing developer REST operations | 24 | 24 | Same 24 |

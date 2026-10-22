@@ -27,6 +27,7 @@ func main() {
 func run() error {
 	ids := flag.String("ids", "", "UTF-8 file containing one YouTube ID per line")
 	storage := flag.String("storage", "", "storage JSON; required for downloads")
+	optionsFile := flag.String("options", "", "optional source options JSON, for example MP4 download settings")
 	source := flag.String("source", "youtube_metadata", "one of the five YouTube bulk sources")
 	id := flag.String("job", "", "existing bulk ID; never creates a replacement job")
 	start := flag.Bool("start", false, "start an existing awaiting_upload job after its input was uploaded")
@@ -89,6 +90,15 @@ func run() error {
 			return fmt.Errorf("could not rewind input")
 		}
 		options := map[string]any{}
+		if *optionsFile != "" {
+			b, err := os.ReadFile(*optionsFile)
+			if err != nil {
+				return fmt.Errorf("could not read options JSON")
+			}
+			if json.Unmarshal(b, &options) != nil || options == nil {
+				return fmt.Errorf("options JSON must be an object")
+			}
+		}
 		if *storage != "" {
 			b, err := os.ReadFile(*storage)
 			if err != nil {
@@ -105,11 +115,13 @@ func run() error {
 			options[field] = dest
 		}
 		if *source == "youtube_download" {
-			if *storage == "" {
+			if options["storage"] == nil {
 				return fmt.Errorf("downloads require -storage")
 			}
-			options["download_type"] = "audio"
-			options["output_format"] = "mp3"
+			if *optionsFile == "" {
+				options["download_type"] = "audio"
+				options["output_format"] = "mp3"
+			}
 		}
 		request := flashdata.CreateBulkJobRequest{Source: flashdata.Source(*source), Options: options}
 		if err = flashdata.ValidateBulkCreate(request); err != nil {

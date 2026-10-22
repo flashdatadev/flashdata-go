@@ -6,6 +6,21 @@
 
 适用于 Go 服务和后台工作进程。需要在终端完成相同工作流时，可以使用 [FlashData CLI](https://github.com/flashdatadev/flashdata-cli)。
 
+## 按使用场景选择工作流
+
+| 想要构建的功能 | 从这里开始 |
+| --- | --- |
+| 为 AI 助手提供网页上下文和来源链接 | [Google 搜索](#在新项目中完成第一次搜索) |
+| 行业研究或新闻监控 | [新闻搜索](#搜索最新新闻) |
+| 按主题发现视频或学习资源 | [YouTube 搜索](#按主题查找-youtube-视频) |
+| 视频分析和内容目录补全 | [视频元数据](#获取视频元数据) |
+| 为视频摘要、搜索或检索获取文本 | [已有字幕文本](#获取字幕用于摘要或分析) |
+| 根据一组视频 ID 构建数据集 | [批量元数据导出](#构建视频数据集) |
+| 将音频或视频交付到自己的云存储桶 | [批量媒体下载](#完整批量下载任务) |
+| 继续中断的批量任务 | [恢复任务](#恢复已启动的任务) |
+
+以下示例负责获取数据；摘要、检索索引、调度和 AI 模型调用由应用实现。
+
 ## 安装
 
 需要 **Go 1.25+**。在应用的 Go 模块中运行：
@@ -148,12 +163,29 @@ if err = json.NewEncoder(os.Stdout).Encode(result); err != nil {
 
 结果保留服务商原始 JSON，包括服务后续新增的字段。如需类型化访问，可用 `flashdata.DecodeResults[flashdata.GoogleSearchPayload](result)` 获取 Google 搜索载荷；字段可能缺失或为 null。详见[响应类型](docs/api-reference.md)。
 
+### 读取人工上传的字幕轨道
+
+使用与上面相同的客户端和上下文，请求已有的人工英文字幕：
+
+```go
+result, err := client.YouTube.Captions(ctx, flashdata.YouTubeCaptionsInput{
+	VideoID: "dQw4w9WgXcQ",
+	Params: &flashdata.YouTubeCaptionsParams{Language: flashdata.Ptr("en"), Auto: flashdata.Ptr(false)},
+})
+if err != nil {
+	log.Fatal(err)
+}
+if err = json.NewEncoder(os.Stdout).Encode(result); err != nil {
+	log.Fatal(err)
+}
+```
+
 ## 运行仓库自带的示例
 
 上面的快速开始适用于你自己的应用。如需运行仓库中独立的示例程序，请将 SDK 克隆到另一个目录，并在克隆目录根路径运行命令，继续使用相同的 API 密钥环境变量：
 
 ```bash
-git clone --branch v1.0.0 --depth 1 https://github.com/flashdatadev/flashdata-go.git
+git clone --depth 1 https://github.com/flashdatadev/flashdata-go.git
 cd flashdata-go
 go mod download
 ```
@@ -222,7 +254,24 @@ go run ./examples/bulk -source youtube_download -ids ids.txt -storage storage.js
 
 此完整示例会验证输入、预留输出路径、创建任务，将 ID 保存到 `audio-receipts.jsonl.job.json`，然后上传、启动、等待和导出回执。请检查每行状态；失败条目会保留，并使程序以非零状态退出。已有输出文件和恢复记录不会被覆盖。
 
-**3. 恢复已启动的任务。** 从 `audio-receipts.jsonl.job.json` 读取 ID，替换 `bulk_YOUR_ID`，并选择一个新输出路径：
+### 改为交付 MP4 视频
+
+将以下非秘密配置保存为 `video-options.json`：
+
+```json
+{"download_type":"audio_video","video_quality":"<=720","output_format":"mp4"}
+```
+
+```bash
+go run ./examples/bulk -source youtube_download -ids ids.txt -storage storage.json -options video-options.json -out video-receipts.jsonl
+```
+
+此命令使用 `main` 分支中的最新示例；上述克隆命令会获取这些示例。
+SDK 本身仍可通过 v1.0.0 模块版本安装，支持音频和视频选项。
+
+### 恢复已启动的任务
+
+从 `audio-receipts.jsonl.job.json` 或 `video-receipts.jsonl.job.json` 读取 ID，替换 `bulk_YOUR_ID`，并选择一个新输出路径：
 
 ```bash
 go run ./examples/bulk -job bulk_YOUR_ID -out recovered-receipts.jsonl
@@ -347,6 +396,8 @@ func main() {
 | 来源发现、套餐、服务健康状态 | `client.Public` |
 
 参阅 [API 参考](docs/api-reference.md)、[所有来源参数](docs/sources.md)及[可运行示例](examples/README.md)。可选的代理注册与浏览器认领流程见[接入指南](docs/onboarding.md)；是否可用取决于服务端部署。
+
+参阅[各 SDK 与 CLI 对比（英文）](docs/sdk-parity.md)，比较 API 覆盖、示例和批量恢复行为。
 
 ## 在服务中使用 SDK
 

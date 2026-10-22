@@ -34,3 +34,10 @@ Background reserves `background.job.json` before submitting. A second invocation
 Download needs `-storage storage.json` or `-job job_ID`. Bulk needs `-ids ids.txt` and an appropriate source; downloads additionally need `-storage`. Supply a fresh `-out` name for recovery to retain previous partial exports. `go run ./examples/bulk -job ID` does not replay input or submit replacement work. See the [complete README task](../README.md#complete-bulk-download-task) and [recovery details](../docs/bulk.md).
 
 Onboarding registration and installation ACK require an application-owned secure durable store and fresh-process verification. The example intentionally covers the safe read/claim primitives; [the integration guide](../docs/onboarding.md) describes the complete lifecycle. Offline tests exercise all machine methods.
+
+For MP4 bulk delivery, provide `-options video-options.json` with
+`{"download_type":"audio_video","video_quality":"<=720","output_format":"mp4"}`
+and the same private `-storage` file. Without an options file the media example requests
+MP3 audio. The options file also supports source-specific data-bulk settings, validated
+before creation. Use the latest examples on `main`; the SDK module API is still v1.0.0.
+See the [all-client comparison](../docs/sdk-parity.md).

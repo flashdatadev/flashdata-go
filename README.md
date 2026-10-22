@@ -6,6 +6,22 @@
 
 Use it in Go services and workers, or use the [FlashData CLI](https://github.com/flashdatadev/flashdata-cli) for the same workflows from your terminal.
 
+## Choose a workflow
+
+| What you want to build | Start here |
+| --- | --- |
+| Web context and source links for an AI assistant | [Google search](#first-search-in-a-new-project) |
+| Industry research or news monitoring | [News search](#search-recent-news) |
+| Video discovery for a topic or learning resource | [YouTube search](#find-youtube-videos-about-a-topic) |
+| Video analytics and catalog enrichment | [Video metadata](#get-a-videos-metadata) |
+| Text for video summaries, search or retrieval | [Existing transcripts](#get-a-transcript-for-summarization-or-analysis) |
+| A dataset from a list of video IDs | [Bulk metadata export](#build-a-video-dataset) |
+| Audio or video files delivered to your own cloud bucket | [Bulk media download](#complete-bulk-download-task) |
+| Continue an interrupted bulk job | [Recovery](#recover-an-already-started-task) |
+
+The examples collect data; your application provides summarization, indexing, scheduling
+and AI model calls.
+
 ## Install
 
 Requires **Go 1.25+**. From your application's Go module:
@@ -148,12 +164,29 @@ Replace the example video ID with your own. Transcript availability depends on e
 
 Results preserve provider JSON, including fields added by the service. For typed access, `flashdata.DecodeResults[flashdata.GoogleSearchPayload](result)` returns the Google search payloads; fields may be absent or null. See [response types](docs/api-reference.md).
 
+### Read an uploaded caption track
+
+Use the same client and context to request an existing uploaded English track:
+
+```go
+result, err := client.YouTube.Captions(ctx, flashdata.YouTubeCaptionsInput{
+	VideoID: "dQw4w9WgXcQ",
+	Params: &flashdata.YouTubeCaptionsParams{Language: flashdata.Ptr("en"), Auto: flashdata.Ptr(false)},
+})
+if err != nil {
+	log.Fatal(err)
+}
+if err = json.NewEncoder(os.Stdout).Encode(result); err != nil {
+	log.Fatal(err)
+}
+```
+
 ## Run the included examples
 
 The quickstart above works in your own application. To run the repository's standalone examples, clone the SDK into a separate directory and run commands from the clone root, using the same API key environment variable:
 
 ```bash
-git clone --branch v1.0.0 --depth 1 https://github.com/flashdatadev/flashdata-go.git
+git clone --depth 1 https://github.com/flashdatadev/flashdata-go.git
 cd flashdata-go
 go mod download
 ```
@@ -222,7 +255,24 @@ go run ./examples/bulk -source youtube_download -ids ids.txt -storage storage.js
 
 This complete example validates the input, reserves output paths, creates the task, saves its ID to `audio-receipts.jsonl.job.json`, uploads, starts, waits and exports receipts. Inspect each row's status; failed items are retained and cause a nonzero exit. Existing output and recovery files are never overwritten.
 
-**3. Recover an already started task.** Read the ID from `audio-receipts.jsonl.job.json`, replace `bulk_YOUR_ID`, and choose a new output path:
+### Deliver MP4 video instead
+
+Save these non-secret settings as `video-options.json`:
+
+```json
+{"download_type":"audio_video","video_quality":"<=720","output_format":"mp4"}
+```
+
+```bash
+go run ./examples/bulk -source youtube_download -ids ids.txt -storage storage.json -options video-options.json -out video-receipts.jsonl
+```
+
+This command uses the current example on `main`, fetched by the clone command above.
+The SDK module remains installable at v1.0.0 and supports both media option sets.
+
+### Recover an already started task
+
+Read the ID from `audio-receipts.jsonl.job.json` or `video-receipts.jsonl.job.json`, replace `bulk_YOUR_ID`, and choose a new output path:
 
 ```bash
 go run ./examples/bulk -job bulk_YOUR_ID -out recovered-receipts.jsonl
@@ -347,6 +397,8 @@ func main() {
 | Source discovery, plans and service health | `client.Public` |
 
 See the [API reference](docs/api-reference.md), [all source parameters](docs/sources.md) and [runnable examples](examples/README.md). Optional agent registration and browser claiming are covered in [onboarding](docs/onboarding.md); availability depends on the server deployment.
+
+See the [SDK and CLI comparison](docs/sdk-parity.md) for API coverage, examples and bulk recovery across languages.
 
 ## Using the SDK in a service
 

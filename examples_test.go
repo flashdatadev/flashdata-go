@@ -40,7 +40,7 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 		t.Fatal(err)
 	}
 	part := gzipBytes(t, "{\"index\":0,\"source\":\"youtube_download\",\"video_id\":\"dQw4w9WgXcQ\",\"status\":\"completed\",\"results\":[]}\n")
-	var requests, creations atomic.Int32
+	var requests, creations, videoCreations atomic.Int32
 	var failNextStart atomic.Bool
 	var base string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +85,18 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 			respond(w, map[string]any{"protocolVersion": 2, "available": false})
 		case "/v2/bulk-jobs":
 			creations.Add(1)
+			var request struct {
+				Options map[string]any `json:"options"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+				t.Error("invalid bulk example request", err)
+			}
+			if request.Options["download_type"] == "audio_video" {
+				videoCreations.Add(1)
+				if request.Options["output_format"] != "mp4" || request.Options["video_quality"] != "<=720" {
+					t.Error("video options were not forwarded")
+				}
+			}
 			respond(w, map[string]any{"job": map[string]any{"id": "bulk_examples", "status": "awaiting_upload"}, "upload": map[string]any{"href": base + "/upload", "method": "PUT", "contentType": "text/plain; charset=utf-8", "expiresAt": time.Now().Add(time.Minute).Format(time.RFC3339)}})
 		case "/upload":
 			if r.Header.Get("X-API-Key") != "" {
@@ -139,6 +151,9 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 			t.Fatal(err)
 		}
 		if err = os.WriteFile(filepath.Join(dir, "storage.json"), []byte(`{"storage_type":"s3","storage_url":"offline-bucket","access_key":"offline","secret_key":"offline-secret"}`), 0600); err != nil {
+			t.Fatal(err)
+		}
+		if err = os.WriteFile(filepath.Join(dir, "video-options.json"), []byte(`{"download_type":"audio_video","video_quality":"<=720","output_format":"mp4"}`), 0600); err != nil {
 			t.Fatal(err)
 		}
 		execute := func(arguments ...string) ([]byte, error) {
@@ -217,6 +232,13 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 			run(t, "./examples/"+d.Name(), args...)
 		})
 	}
+	t.Run("bulk-video-options", func(t *testing.T) {
+		before := videoCreations.Load()
+		run(t, "./examples/bulk", "-source", "youtube_download", "-ids", "ids.txt", "-storage", "storage.json", "-options", "video-options.json", "-out", "receipts.jsonl")
+		if videoCreations.Load() != before+1 {
+			t.Fatal("MP4 example did not create exactly one video download task")
+		}
+	})
 	re := regexp.MustCompile("(?s)```go\\r?\\n(.*?)```")
 	var english []string
 	var quickstartPrefix string
