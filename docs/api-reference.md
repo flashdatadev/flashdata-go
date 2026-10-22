@@ -15,7 +15,7 @@ All network methods accept `context.Context`. Reuse a Client; explicitly pass `O
 | Public | Sources, Plans, Health, Status |
 | Onboarding | Capabilities, Register, TemporaryStatus, Identity, Status, CreateClaim, Handoff, Acknowledge |
 
-Use `go doc .` or `go doc .BulkService` from this module for exact Go signatures. The generated response types retain wire field tags; generic provider/result objects preserve raw JSON. `Storage` and `ServiceAccount` alias the download destination models. See [sources](sources.md), [bulk](bulk.md), [onboarding](onboarding.md) and [error semantics](../README.md#errors-timeouts-and-http-transport).
+Use `go doc .` or `go doc .BulkService` from this module for exact Go signatures. The generated response types retain wire field tags; generic provider/result objects preserve raw JSON. `Storage` and `ServiceAccount` alias the download destination models. See [sources](sources.md), [bulk](bulk.md), [onboarding](onboarding.md) and [error semantics](#errors-timeouts-and-http-transport).
 
 Offline helpers are available to applications such as the CLI: `Sources()` returns the supported source identifiers, `QuerySchema(source)` returns an independent copy of a source's base input schema (callback, mode and strict root-field policy are additionally enforced by `ValidateQuery`), and `ValidateQuery(query, asynchronous)`, `ValidateBulkCreate(request)` and `ValidateRegistration(request)` use the same validation as network submissions without sending a request. `NormalizeOrigin(origin)` applies the SDK's service-origin validation. These checks validate request shapes; they do not verify credentials, account permissions, credits or server admission.
 
@@ -63,3 +63,11 @@ Offline helpers are available to applications such as the CLI: `Sources()` retur
 | POST | `/agent-connections/claims/{claimId}/approve` | `approveAgentClaim` |
 | POST | `/agent-connections/{connectionId}/handoff` | `deliverAgentHandoff` |
 | POST | `/agent-connections/{connectionId}/handoff/ack` | `acknowledgeAgentHandoff` |
+
+## Errors, timeouts and HTTP transport
+
+Use `errors.As` for `APIError`, `ValidationError`, `SubmissionUnknownError`, `PollingTimeoutError`, `PollingInterruptedError`, `JobPausedError`, `JobFailedError` and `ProtocolError`; use `errors.Is` for context cancellation/deadlines and `ErrResponseTooLarge`. `APIError` includes redacted message/code, status, request ID and Retry-After. Decide any retry policy explicitly; do not blindly retry mutations or paid realtime calls.
+
+Clients are reusable and safe for concurrent calls. Every operation takes `context.Context`. Default request timeout is 120 seconds; job polling is 5 minutes/2-second intervals and bulk polling 1 hour/5-second intervals. Uploads have a 15-minute request budget. Caller deadlines and an injected `HTTPClient.Timeout` can shorten those budgets. Inject an HTTP client/transport for proxies or instrumentation; cookies and automatic redirects are disabled on the client's copy. Avoid credential-adding custom transports on signed storage requests.
+
+Use HTTPS origins; HTTP is permitted only on loopback for tests. Production origins are `https://data.flashdata.dev` and `https://api.flashdata.dev`; management methods append `/v2`. Signed result origins are discovered through authenticated account metadata, validated exactly, and contacted without keys or cookies. Caller-supplied `ResultOrigin` is an explicit trust override. Storage errors redact bare signed-URL credentials as well as complete URLs. Client, onboarding credential, storage and signed-upload models redact normal Go diagnostic formatting; JSON serialization intentionally retains wire credentials and must never be logged.

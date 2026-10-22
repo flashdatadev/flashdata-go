@@ -219,12 +219,14 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 	}
 	re := regexp.MustCompile("(?s)```go\\r?\\n(.*?)```")
 	var english []string
+	var quickstartPrefix string
 	for _, file := range []string{"README.md", "README.zh-CN.md"} {
 		content, err := os.ReadFile(file)
 		if err != nil {
 			t.Fatal(err)
 		}
 		blocks := re.FindAllStringSubmatch(string(content), -1)
+		completePrograms := 0
 		for i, block := range blocks {
 			code := strings.TrimSpace(block[1])
 			if file == "README.md" {
@@ -232,6 +234,30 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 			} else if i >= len(english) || english[i] != code {
 				t.Fatal("translated code drifted")
 			}
+			if strings.HasPrefix(code, "package main") {
+				completePrograms++
+				if i == 0 {
+					prefix, _, found := strings.Cut(code, "\n\tresult, err := ")
+					if !found {
+						t.Fatal("quickstart needs a replaceable query section")
+					}
+					quickstartPrefix = prefix
+				}
+			} else {
+				if quickstartPrefix == "" {
+					t.Fatal("README snippets must follow the complete quickstart")
+				}
+				// Exercise exactly the replacement workflow described to readers:
+				// keep the quickstart's imports/client/context, replace the query.
+				code = quickstartPrefix + "\n" + code + "\n}\n"
+			}
+			// Customer examples only configure their API key. Inject test origins
+			// here, requiring an exact match so the subprocess cannot call live APIs.
+			const options = `flashdata.Options{APIKey: os.Getenv("FLASHDATA_API_KEY")}`
+			if strings.Count(code, options) != 1 {
+				t.Fatal("README program must have one explicit API-key client")
+			}
+			code = strings.Replace(code, options, `flashdata.Options{APIKey: os.Getenv("FLASHDATA_API_KEY"), DataOrigin: os.Getenv("FLASHDATA_DATA_ORIGIN"), ManagementOrigin: os.Getenv("FLASHDATA_MANAGEMENT_ORIGIN")}`, 1)
 			t.Run(fmt.Sprintf("%s/program-%d", file, i+1), func(t *testing.T) {
 				dir := t.TempDir()
 				source := filepath.Join(dir, "main.go")
@@ -241,8 +267,11 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 				run(t, source)
 			})
 		}
-		if len(blocks) != 2 {
-			t.Fatal("README lost quickstart or complete bulk program")
+		if completePrograms != 2 || len(blocks) < 3 {
+			t.Fatal("README needs the quickstart, task snippets and complete bulk program")
+		}
+		if file == "README.zh-CN.md" && len(blocks) != len(english) {
+			t.Fatal("translated code block count differs")
 		}
 	}
 }

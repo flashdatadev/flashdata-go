@@ -1,66 +1,94 @@
 package main
 
 import (
-    "context"
-    "encoding/json"
-    "log"
-    "os"
-    "time"
+	"context"
+	"encoding/json"
+	"log"
+	"os"
+	"time"
 
-    flashdata "github.com/flashdatadev/flashdata-go"
+	flashdata "github.com/flashdatadev/flashdata-go"
 )
 
 func main() {
-    client, err := flashdata.New(flashdata.Options{APIKey: os.Getenv("FLASHDATA_API_KEY"), DataOrigin: os.Getenv("FLASHDATA_DATA_ORIGIN"), ManagementOrigin: os.Getenv("FLASHDATA_MANAGEMENT_ORIGIN")})
-    if err != nil { log.Fatal(err) }
-    ctx, cancel := context.WithTimeout(context.Background(), 65*time.Minute)
-    defer cancel()
+	client, err := flashdata.New(flashdata.Options{APIKey: os.Getenv("FLASHDATA_API_KEY")})
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 65*time.Minute)
+	defer cancel()
 
-    // storage.json contains your real customer-owned destination configuration.
-    storageJSON, err := os.ReadFile("storage.json")
-    if err != nil { log.Fatal("could not read storage.json") }
-    var storage flashdata.YouTubeDownloadParamsStorage
-    if err = json.Unmarshal(storageJSON, &storage); err != nil { log.Fatal("invalid storage JSON") }
+	// storage.json contains your real customer-owned destination configuration.
+	storageJSON, err := os.ReadFile("storage.json")
+	if err != nil {
+		log.Fatal("could not read storage.json")
+	}
+	var storage flashdata.Storage
+	if err = json.Unmarshal(storageJSON, &storage); err != nil {
+		log.Fatal("invalid storage JSON")
+	}
 
-    // Reserve both paths before creating work; never overwrite a saved job.
-    file, err := os.OpenFile("download-results.jsonl", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
-    if err != nil { log.Fatal("choose a new result output path") }
-    defer file.Close()
-    recovery, err := os.OpenFile("download.job.json", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
-    if err != nil { log.Fatal("recover the saved job or choose a new recovery path") }
-    defer recovery.Close()
+	// Reserve both paths before creating work; never overwrite a saved job.
+	file, err := os.OpenFile("download-results.jsonl", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Fatal("choose a new result output path")
+	}
+	defer file.Close()
+	recovery, err := os.OpenFile("download.job.json", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Fatal("recover the saved job or choose a new recovery path")
+	}
+	defer recovery.Close()
 
-    // Each line of ids.txt is one 11-character YouTube video ID.
-    // Validate the input and output paths before creating a real job; the
-    // runnable bulk example below performs these preflight checks.
-    created, err := client.Bulk.Create(ctx, flashdata.CreateBulkJobRequest{
-        Source: flashdata.SourceYouTubeDownload,
-        Options: flashdata.YouTubeDownloadParams{
-            DownloadType: flashdata.Ptr("audio"), OutputFormat: flashdata.Ptr("mp3"),
-            Storage: storage,
-        },
-    })
-    if err != nil { log.Fatal(err) }
-    id := created.Job.ID
-    log.Printf("Accepted %s; save this ID before continuing", id)
-    if err = json.NewEncoder(recovery).Encode(map[string]string{"id": id}); err == nil {
-        err = recovery.Sync()
-    }
-    if err != nil {
-        log.Fatalf("accepted %s; could not persist recovery record", id)
-    }
-    if err = client.Bulk.UploadFile(ctx, created, "ids.txt"); err != nil { log.Fatal(err) }
-    if _, err = client.Bulk.Start(ctx, id); err != nil { log.Fatal(err) }
-    if _, err = client.Bulk.Wait(ctx, id, flashdata.PollOptions{Timeout: time.Hour}); err != nil { log.Fatal(err) }
+	// Each line of ids.txt is one 11-character YouTube video ID.
+	// Validate the input and output paths before creating a real job; the
+	// runnable examples/bulk program performs these preflight checks.
+	created, err := client.Bulk.Create(ctx, flashdata.CreateBulkJobRequest{
+		Source: flashdata.SourceYouTubeDownload,
+		Options: flashdata.YouTubeDownloadParams{
+			DownloadType: flashdata.Ptr("audio"), OutputFormat: flashdata.Ptr("mp3"),
+			Storage: storage,
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	id := created.Job.ID
+	log.Printf("Accepted %s; save this ID before continuing", id)
+	if err = json.NewEncoder(recovery).Encode(map[string]string{"id": id}); err == nil {
+		err = recovery.Sync()
+	}
+	if err != nil {
+		log.Fatalf("accepted %s; could not persist recovery record", id)
+	}
+	if err = client.Bulk.UploadFile(ctx, created, "ids.txt"); err != nil {
+		log.Fatal(err)
+	}
+	if _, err = client.Bulk.Start(ctx, id); err != nil {
+		log.Fatal(err)
+	}
+	if _, err = client.Bulk.Wait(ctx, id, flashdata.PollOptions{Timeout: time.Hour}); err != nil {
+		log.Fatal(err)
+	}
 
-    encoder := json.NewEncoder(file)
-    failed := 0
-    for row, err := range client.Bulk.Rows(ctx, id) {
-        if err != nil { log.Fatalf("partial output retained for %s: %v", id, err) }
-        if err = encoder.Encode(row); err != nil { log.Fatal("could not write results") }
-        if string(row["status"]) != `"completed"` { failed++ }
-    }
-    if err = file.Sync(); err != nil { log.Fatal("could not flush results") }
-    if failed != 0 { log.Fatalf("%d failed/invalid item receipts retained; inspect before retrying", failed) }
-    log.Printf("Saved receipts for %s; media files are in your storage bucket", id)
+	encoder := json.NewEncoder(file)
+	failed := 0
+	for row, err := range client.Bulk.Rows(ctx, id) {
+		if err != nil {
+			log.Fatalf("partial output retained for %s: %v", id, err)
+		}
+		if err = encoder.Encode(row); err != nil {
+			log.Fatal("could not write results")
+		}
+		if string(row["status"]) != `"completed"` {
+			failed++
+		}
+	}
+	if err = file.Sync(); err != nil {
+		log.Fatal("could not flush results")
+	}
+	if failed != 0 {
+		log.Fatalf("%d failed/invalid item receipts retained; inspect before retrying", failed)
+	}
+	log.Printf("Saved receipts for %s; media files are in your storage bucket", id)
 }
