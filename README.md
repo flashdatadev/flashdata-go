@@ -1,6 +1,6 @@
 # FlashData Go
 
-[简体中文](README.zh-CN.md) · [FlashData](https://flashdata.dev) · [API docs](https://flashdata.dev/docs) · [Go reference](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0) · [Pricing](https://flashdata.dev/pricing)
+[简体中文](README.zh-CN.md) · [FlashData](https://flashdata.dev) · [API docs](https://flashdata.dev/docs) · [Go reference](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.1.0) · [Pricing](https://flashdata.dev/pricing)
 
 **Add Google search and YouTube data to your Go application.** [FlashData](https://flashdata.dev) provides structured search results, video metadata, existing transcripts and cloud media delivery through one API. Use this SDK to give an AI assistant web context, research videos, or build a data pipeline that processes many video IDs.
 
@@ -24,14 +24,13 @@ and AI model calls.
 
 ## Install
 
-Response-format methods described here are available in the current source on
-`main`; published v1.0.0 has the original JSON methods. Before the next release,
-run `go get github.com/flashdatadev/flashdata-go@main` to use the new methods.
+Version 1.1.0 includes JSON, plain-text and Markdown response methods. Existing
+typed JSON methods keep their defaults.
 
 Requires **Go 1.25+**. From your application's Go module:
 
 ```bash
-go get github.com/flashdatadev/flashdata-go@v1.0.0
+go get github.com/flashdatadev/flashdata-go@v1.1.0
 ```
 
 ## First search in a new project
@@ -42,7 +41,7 @@ Start a small application:
 mkdir flashdata-demo
 cd flashdata-demo
 go mod init example.com/flashdata-demo
-go get github.com/flashdatadev/flashdata-go@v1.0.0
+go get github.com/flashdatadev/flashdata-go@v1.1.0
 ```
 
 Save this as `main.go`:
@@ -287,7 +286,7 @@ go run ./examples/bulk -source youtube_download -ids ids.txt -storage storage.js
 ```
 
 This command uses the current example on `main`, fetched by the clone command above.
-The SDK module remains installable at v1.0.0 and supports both media option sets.
+The v1.1.0 SDK supports both media option sets.
 
 ### Recover an already started task
 
@@ -425,4 +424,4 @@ Reuse a client across requests and pass a `context.Context` to every call. Optio
 
 The SDK does not automatically retry paid queries or job creation. Persist accepted job IDs before waiting, and reconcile an uncertain submission before creating replacement work. See [errors, timeouts and HTTP configuration](docs/api-reference.md#errors-timeouts-and-http-transport) and [bulk recovery](docs/bulk.md).
 
-[API documentation](https://flashdata.dev/docs) · [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0) · [Contributing and tests](CONTRIBUTING.md) · [Release notes](docs/release-notes-1.0.0.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
+[API documentation](https://flashdata.dev/docs) · [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.1.0) · [Contributing and tests](CONTRIBUTING.md) · [Release notes](docs/release-notes-1.1.0.md) · [Security](SECURITY.md) · [MIT license](LICENSE)

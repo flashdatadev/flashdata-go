@@ -1,6 +1,6 @@
 # FlashData Go
 
-[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [Go 参考](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0) · [价格](https://flashdata.dev/pricing)
+[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [Go 参考](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.1.0) · [价格](https://flashdata.dev/pricing)
 
 **为 Go 应用接入 Google 搜索和 YouTube 数据。** [FlashData](https://flashdata.dev) 通过统一 API 提供结构化搜索结果、视频元数据、已有字幕和云存储媒体交付。使用本 SDK 为 AI 助手提供网页上下文、研究视频，或构建处理大量视频 ID 的数据流水线。
 
@@ -23,14 +23,12 @@
 
 ## 安装
 
-本文介绍的响应格式方法已加入 `main` 源码；已发布的 v1.0.0 版本保留原有 JSON
-方法。在下个版本发布前，可运行 `go get github.com/flashdatadev/flashdata-go@main`
-获取新方法。
+1.1.0 提供 JSON、纯文本和 Markdown 响应方法，原有类型化 JSON 方法的默认行为保持不变。
 
 需要 **Go 1.25+**。在应用的 Go 模块中运行：
 
 ```bash
-go get github.com/flashdatadev/flashdata-go@v1.0.0
+go get github.com/flashdatadev/flashdata-go@v1.1.0
 ```
 
 ## 在新项目中完成第一次搜索
@@ -41,7 +39,7 @@ go get github.com/flashdatadev/flashdata-go@v1.0.0
 mkdir flashdata-demo
 cd flashdata-demo
 go mod init example.com/flashdata-demo
-go get github.com/flashdatadev/flashdata-go@v1.0.0
+go get github.com/flashdatadev/flashdata-go@v1.1.0
 ```
 
 将以下内容保存为 `main.go`：
@@ -285,7 +283,7 @@ go run ./examples/bulk -source youtube_download -ids ids.txt -storage storage.js
 ```
 
 此命令使用 `main` 分支中的最新示例；上述克隆命令会获取这些示例。
-SDK 本身仍可通过 v1.0.0 模块版本安装，支持音频和视频选项。
+v1.1.0 SDK 同时支持音频和视频选项。
 
 ### 恢复已启动的任务
 
@@ -423,4 +421,4 @@ func main() {
 
 SDK 不会自动重试付费查询或任务创建。等待之前请持久化已受理的任务 ID；提交结果不确定时，先核对状态，再决定是否创建替代任务。详见[错误、超时和 HTTP 配置](docs/api-reference.md#errors-timeouts-and-http-transport)以及[批量恢复](docs/bulk.md)。
 
-[API 文档](https://flashdata.dev/docs) · [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.0.0) · [参与贡献与测试](CONTRIBUTING.md) · [版本说明](docs/release-notes-1.0.0.md) · [安全](SECURITY.md) · [MIT 许可](LICENSE)
+[API 文档](https://flashdata.dev/docs) · [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.1.0) · [参与贡献与测试](CONTRIBUTING.md) · [版本说明](docs/release-notes-1.1.0.md) · [安全](SECURITY.md) · [MIT 许可](LICENSE)

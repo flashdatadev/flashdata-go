@@ -15,7 +15,7 @@ The current source snapshot includes independent `Accept` negotiation for realti
 submission, batch, job-status and completed-result responses. `X-Respond-With`
 selects Markdown only for realtime and completed results. Existing SDK methods
 remain typed JSON; see [response formats](response-formats.md) for `WithFormat`
-methods and examples. These additions are available on `main`, after v1.0.0.
+methods and examples. These additions are included in v1.1.0.
 
 Maintainers with a local service checkout can verify the five affected operations
 and all-source fixtures without API calls:

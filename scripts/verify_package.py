@@ -20,7 +20,7 @@ from release_manifest import load_release_files, write_zip_member
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE = "github.com/flashdatadev/flashdata-go"
-VERSION = "v1.0.0"
+VERSION = "v1.1.0"
 
 
 def main():
@@ -123,7 +123,7 @@ func main(){
         capture_output=True,
         text=True,
     )
-    assert result.stdout.strip() == "1.0.0", result.stdout
+    assert result.stdout.strip() == VERSION.removeprefix("v"), result.stdout
     cross_builds = []
     binaries = output / "binaries"
     binaries.mkdir()

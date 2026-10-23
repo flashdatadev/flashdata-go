@@ -2,7 +2,7 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
-## Unreleased
+## 1.1.0 — 2026-10-23
 
 Add per-call `WithFormat` methods for JSON, plain text and Markdown. Realtime and
 completed-result reads accept `ContentOptions`; receipts and status accept

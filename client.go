@@ -23,7 +23,7 @@ import (
 	"unicode/utf8"
 )
 
-const Version = "1.0.0"
+const Version = "1.1.0"
 
 // Options configures a client. APIKey must be passed explicitly for key APIs.
 // Empty APIKey permits public discovery and proof-authenticated onboarding only.
