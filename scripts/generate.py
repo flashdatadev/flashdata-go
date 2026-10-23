@@ -130,6 +130,19 @@ for n, s in OPENAPI["components"]["schemas"].items():
         "UpdateBulkJobRequest",
     ):
         continue
+    if n == "MarkdownQueryResult":
+        # The schema permits metadata beyond its three required fields. Include
+        # the timestamps/ID used by realtime and stored-result wire envelopes.
+        s = {
+            **s,
+            "properties": {
+                **s["properties"],
+                **{
+                    field: {"type": "string"}
+                    for field in ("id", "created_at", "completed_at", "expires_at")
+                },
+            },
+        }
     models[typename(n)] = s
 # Provider payload hints are derived from sanitized examples, never a required response shape.
 FIXTURES = json.loads(
@@ -181,6 +194,10 @@ while True:
         for field, p in s.get("properties", {}).items():
             typ = gotype(p, n + name(field))
             required = field in s.get("required", [])
+            # Keep the published Go model's JSON marshaling behavior while the
+            # newer API schema makes these response fields explicitly required.
+            if n == "DataQueryResponse" and field in ("source", "status", "results"):
+                required = False
             request_model = any(
                 n.startswith(name(source) + "Params") for source in SCHEMAS
             )
@@ -213,6 +230,10 @@ for source in SCHEMAS:
             f"func (r *{group}Service) {method}(ctx context.Context, input {prefix}Input) (*DataQueryResponse, error) {{",
             "return r.c.Queries.Realtime(ctx, input.Request())",
             "}",
+            f"// {method}WithFormat runs {source} with JSON, text or Markdown response headers.",
+            f"func (r *{group}Service) {method}WithFormat(ctx context.Context, input {prefix}Input, options ContentOptions) (*FormattedResponse, error) {{",
+            "return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)",
+            "}",
         ]
     asyncname = method if source == "youtube_download" else method + "Async"
     helpers += [
@@ -220,6 +241,11 @@ for source in SCHEMAS:
         f"func (r *{group}Service) {asyncname}(ctx context.Context, input {prefix}Input, callbackURL string) (*AsyncSubmission, error) {{",
         "q := input.Request(); q.CallbackURL = callbackURL",
         "return r.c.Queries.Submit(ctx, q)",
+        "}",
+        f"// {asyncname}WithFormat submits {source} with a JSON or plain-text receipt.",
+        f"func (r *{group}Service) {asyncname}WithFormat(ctx context.Context, input {prefix}Input, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {{",
+        "q := input.Request(); q.CallbackURL = callbackURL",
+        "return r.c.Queries.SubmitWithFormat(ctx, q, options)",
         "}",
     ]
 (ROOT / "sources_generated.go").write_text("\n".join(helpers) + "\n")

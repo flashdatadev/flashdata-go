@@ -4,6 +4,12 @@
 
 All source inputs expose `Request()` for generic query methods. Source helpers have matching `*Async` variants, except Download which is always submitted. Optional Params fields use pointers; the SDK sends no invented defaults.
 
+All 14 realtime helpers also have `WithFormat` variants taking `ContentOptions`
+for JSON, plain text or Markdown. Background helpers, including Download, have
+`WithFormat` variants taking `ResponseOptions` for JSON or plain-text receipts.
+Select Markdown when reading completed results with `Jobs.ResultWithFormat`.
+See [response formats](response-formats.md); input parameters below are unchanged.
+
 ## google_search
 
 [Official google_search reference](https://flashdata.dev/docs/sources/google_search) · [Runnable example](../examples/google_search/main.go)

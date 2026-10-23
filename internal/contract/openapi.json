@@ -399,12 +399,16 @@
           "Jobs"
         ],
         "summary": "Read one Data API job",
+        "description": "Read job.status to check progress and job.error if processing failed. JSON is the default; use Accept: text/plain for readable text. X-Respond-With is ignored here. Follow Retry-After when provided before checking again.",
         "security": [
           {
             "dataApiKey": []
           }
         ],
         "parameters": [
+          {
+            "$ref": "#/components/parameters/ResponseEnvelopeAccept"
+          },
           {
             "name": "jobId",
             "in": "path",
@@ -432,6 +436,12 @@
                     }
                   }
                 }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Job:\n  Id: \"job_example\"\n  Source: \"google_search\"\n  Status: \"processing\"\n"
               }
             }
           },
@@ -440,6 +450,16 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "description": "Neither application/json nor text/plain is acceptable; response is JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryRepresentationError"
+                }
+              }
+            }
           }
         }
       }
@@ -889,13 +909,19 @@
           "Jobs"
         ],
         "summary": "Download a completed async result",
-        "description": "Authenticates access and redirects to a short-lived private R2 URL. The management service never proxies the result body. Clients that follow the redirect receive the JSON result directly from R2. Stored results expire 24 hours after completion.",
+        "description": "By default, authenticates access and redirects to a short-lived private R2 URL; clients receive the original JSON directly from R2. Accept: text/plain independently returns HTTP 200 with the original result fields as indented plain text. X-Respond-With: markdown selects Markdown content: application/json wraps it in content alongside the original metadata, replacing results; text/plain returns metadata followed by Markdown. Missing Accept or a global wildcard defaults to JSON. Formatting does not submit another query or charge query credits. Stored results expire 24 hours after completion. Errors remain structured JSON.",
         "security": [
           {
             "dataApiKey": []
           }
         ],
         "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryRepresentation"
+          },
+          {
+            "$ref": "#/components/parameters/QueryRepresentationAccept"
+          },
           {
             "name": "jobId",
             "in": "path",
@@ -908,18 +934,38 @@
         ],
         "responses": {
           "200": {
-            "description": "Completed result returned by R2 after the client follows the redirect",
+            "description": "Plain-text original fields or Markdown returned directly; original JSON from R2 after following the default redirect",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/MarkdownQueryResult"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  ]
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "original": {
+                    "value": "Source: \"google_search\"\nStatus: \"completed\"\nResults:\n  1:\n    Organic: []\n"
+                  },
+                  "markdown": {
+                    "value": "Source: \"google_search\"\nStatus: \"completed\"\n\nMarkdown Content:\n# Google search\n"
+                  }
                 }
               }
             }
           },
           "302": {
-            "description": "Redirect to the completed JSON result in private R2 storage",
+            "description": "Redirect to original JSON in private R2 storage when JSON is selected without X-Respond-With",
             "headers": {
               "Location": {
                 "description": "Short-lived presigned R2 URL",
@@ -931,11 +977,31 @@
               }
             }
           },
+          "400": {
+            "description": "Unsupported X-Respond-With value; response is JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryRepresentationError"
+                }
+              }
+            }
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "description": "Neither application/json nor text/plain is acceptable; response is JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryRepresentationError"
+                }
+              }
+            }
           },
           "409": {
             "$ref": "#/components/responses/Conflict"
@@ -1035,7 +1101,47 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DataQueryResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/DataQueryResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MarkdownQueryResult"
+                    }
+                  ]
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "original": {
+                    "value": "Source: \"google_search\"\nStatus: \"done\"\nResults:\n  1:\n    Organic: []\n"
+                  },
+                  "markdown": {
+                    "value": "Source: \"google_search\"\nStatus: \"done\"\n\nMarkdown Content:\n# Google search\n"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query input or unsupported X-Respond-With value. Correct the request before retrying.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataQueryError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Unsupported Accept type. Use application/json or text/plain.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryRepresentationError"
                 }
               }
             }
@@ -1043,7 +1149,16 @@
           "default": {
             "description": "Query rejected or upstream unavailable. Inspect the HTTP status, code and message; see /docs/errors."
           }
-        }
+        },
+        "description": "Return query results in the same response. JSON is the default; use Accept: text/plain for readable text. Add X-Respond-With: markdown to replace the results array with Markdown content while keeping source, status, usage and timestamps. Without it, the original fields are returned. Errors use JSON. See /docs/guides/response-formats for examples.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryRepresentation"
+          },
+          {
+            "$ref": "#/components/parameters/QueryRepresentationAccept"
+          }
+        ]
       }
     },
     "/v1/queries": {
@@ -1127,13 +1242,34 @@
                 "schema": {
                   "$ref": "#/components/schemas/AsyncSubmission"
                 }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Unsupported Accept type. Use application/json or text/plain.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryRepresentationError"
+                }
               }
             }
           },
           "default": {
             "description": "Query rejected or upstream unavailable. Inspect the HTTP status, code and message; see /docs/errors."
           }
-        }
+        },
+        "description": "Return a receipt for each accepted job. JSON is the default; use Accept: text/plain for readable text. X-Respond-With is ignored here. To receive Markdown results, set that header when retrieving each completed job's results. Errors use JSON.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResponseEnvelopeAccept"
+          }
+        ]
       }
     },
     "/v1/queries/batch": {
@@ -1215,7 +1351,7 @@
                         }
                       ]
                     },
-                    "description": "Maximum size and pending-job admission depend on your account's current plan."
+                    "description": "Batch size and pending-job limits depend on your plan."
                   }
                 }
               }
@@ -1249,13 +1385,34 @@
                     }
                   }
                 }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Unsupported Accept type. Use application/json or text/plain.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryRepresentationError"
+                }
               }
             }
           },
           "default": {
             "description": "Query rejected or upstream unavailable. Inspect the HTTP status, code and message; see /docs/errors."
           }
-        }
+        },
+        "description": "Return a receipt for each accepted job. JSON is the default; use Accept: text/plain for readable text. X-Respond-With is ignored here. To receive Markdown results, set that header when retrieving each completed job's results. Errors use JSON.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResponseEnvelopeAccept"
+          }
+        ]
       }
     },
     "/api-access/identity": {
@@ -3109,6 +3266,49 @@
         "schema": {
           "type": "string",
           "maxLength": 512
+        }
+      },
+      "QueryRepresentation": {
+        "name": "X-Respond-With",
+        "in": "header",
+        "description": "Set to markdown to return result content as Markdown. Omit to retain the original result fields. Accept independently selects JSON or plain text. Only realtime queries and completed job result reads support this header. It does not change job submissions, status, account APIs, callbacks, Bulk files, binary downloads, or MCP protocol responses.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "markdown"
+          ]
+        }
+      },
+      "QueryRepresentationAccept": {
+        "name": "Accept",
+        "in": "header",
+        "description": "Select application/json or text/plain independently of X-Respond-With. Without X-Respond-With, text/plain returns the original fields with indentation; JSON retains the original response fields (completed-result reads redirect to storage). With markdown, JSON returns content plus metadata and plain text returns metadata followed by Markdown. Standard media ranges and q weights are supported; missing Accept or a global wildcard defaults to JSON. Both response types use UTF-8; an explicit charset=utf-8 parameter is supported.",
+        "schema": {
+          "type": "string"
+        },
+        "examples": {
+          "json": {
+            "value": "application/json"
+          },
+          "plain": {
+            "value": "text/plain"
+          }
+        }
+      },
+      "ResponseEnvelopeAccept": {
+        "name": "Accept",
+        "in": "header",
+        "description": "application/json returns the original structured response; text/plain returns the same fields as indented plain text. Standard media ranges and q weights are supported; missing Accept or a global wildcard defaults to JSON. X-Respond-With is ignored on submission and job-status endpoints. Errors remain structured JSON. Both response types use UTF-8; an explicit charset=utf-8 parameter is supported.",
+        "schema": {
+          "type": "string"
+        },
+        "examples": {
+          "json": {
+            "value": "application/json"
+          },
+          "plain": {
+            "value": "text/plain"
+          }
         }
       }
     },
@@ -5191,7 +5391,12 @@
             }
           }
         },
-        "description": "Source-specific JSON results. See the source reference for response fields and examples."
+        "description": "Source-specific JSON results. See the source reference for response fields and examples.",
+        "required": [
+          "source",
+          "status",
+          "results"
+        ]
       },
       "DataSource": {
         "type": "object",
@@ -7377,6 +7582,78 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "MarkdownQueryResult": {
+        "type": "object",
+        "required": [
+          "source",
+          "status",
+          "content"
+        ],
+        "additionalProperties": true,
+        "description": "Markdown result content. content replaces the results array; other response fields such as id, source, status, usage and timestamps are preserved. No generated summary is added. Source URLs and transcript segment start/end times are retained.",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "description": "Deterministic Markdown derived from the retrieved source result."
+          },
+          "usage": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "DataQueryError": {
+        "type": "object",
+        "required": [
+          "error",
+          "message"
+        ],
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          }
+        }
+      },
+      "QueryRepresentationError": {
+        "type": "object",
+        "required": [
+          "error",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "const": true
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "unsupported_representation",
+              "not_acceptable"
+            ]
+          },
+          "message": {
+            "type": "string"
           }
         }
       }

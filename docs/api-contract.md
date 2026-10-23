@@ -9,7 +9,25 @@ This checkout resolves two local contract gaps needed before a Go-based CLI can 
 
 The Go module snapshot `internal/contract/openapi.json` contains the existing 24 operations plus 14 additional identity/onboarding operations: eight machine onboarding, five browser-owned operations and one key identity operation. Every operation describes its actual header/session requirements. Data and management origins remain separate. `internal/contract/onboarding-contract.json` isolates the additional contract for future SDK parity work.
 
-## Deployment boundary
+## Response formats
+
+The current source snapshot includes independent `Accept` negotiation for realtime,
+submission, batch, job-status and completed-result responses. `X-Respond-With`
+selects Markdown only for realtime and completed results. Existing SDK methods
+remain typed JSON; see [response formats](response-formats.md) for `WithFormat`
+methods and examples. These additions are available on `main`, after v1.0.0.
+
+Maintainers with a local service checkout can verify the five affected operations
+and all-source fixtures without API calls:
+
+```bash
+node scripts/update_response_contract.cjs /path/to/public-openapi.generated.json /path/to/backend/http/responseFormatting.js --check
+```
+
+## Initial identity/onboarding deployment notes
+
+The notes below record the original identity/onboarding integration, independently
+of response formats. Check the target deployment's capabilities before onboarding.
 
 All changes are local. The identity endpoint needs backend deployment before a live client can use it. Agent onboarding already has local route/service implementations but is feature-gated and disabled unless the server is configured for it. The SDK returns the resulting API error; it does not enable a feature, create accounts on failure, invent ownership, or substitute an OAuth credential.
 

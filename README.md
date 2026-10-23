@@ -24,6 +24,10 @@ and AI model calls.
 
 ## Install
 
+Response-format methods described here are available in the current source on
+`main`; published v1.0.0 has the original JSON methods. Before the next release,
+run `go get github.com/flashdatadev/flashdata-go@main` to use the new methods.
+
 Requires **Go 1.25+**. From your application's Go module:
 
 ```bash
@@ -95,6 +99,21 @@ go run .
 The program prints structured Google search results as JSON, including page titles, links and snippets. Queries and jobs use your account's credits; see [pricing](https://flashdata.dev/pricing).
 
 Pass `APIKey` explicitly. Here your application reads `FLASHDATA_API_KEY`; the SDK does not read environment variables or `.env` files on its own.
+
+## JSON, plain text and Markdown
+
+JSON remains the default. Use `Google.SearchWithFormat`,
+`YouTube.TranscriptWithFormat` or `Jobs.ResultWithFormat` with
+`ContentOptions{Accept: AcceptText}` for plain text, and add
+`RespondWith: RespondMarkdown` for Markdown content. Read `response.Text` for text
+or `response.JSON` for JSON; `response.DecodeJSON(&model)` decodes JSON.
+Constants and types belong to the `flashdata` package.
+
+Submission, batch and job-status `WithFormat` methods take `ResponseOptions`,
+which selects JSON or text. Markdown applies to realtime queries and completed
+results. Existing typed methods, polling and pagination keep returning JSON.
+See the [response-format guide](docs/response-formats.md) and
+[runnable example](examples/response_formats/main.go).
 
 ## Common tasks
 

@@ -28,6 +28,20 @@ The final event reports are `.cache/test-results-readiness-127.jsonl` and `.cach
 
 The archive verifier saves `dist/package-check/report.json` and a fresh isolated verification directory on every run. These reports and artifacts are ignored by Git and are not published. The earlier local backend identity/access/onboarding patch had 90 passing tests during its implementation; this SDK review did not change backend source or rerun that database-independent backend suite.
 
+## Response-format validation on current source
+
+The `WithFormat` update adds API-serializer fixtures for all 14 realtime and 15
+stored-result sources in all four format combinations. Tests cover generated source
+helpers, receipts/status, unchanged JSON defaults, recovery IDs, structured errors,
+UTF-8 and gzip limits, cancellation, header scope, documentation recipes and the
+runnable example. The module verifier also runs the new API from a clean consumer.
+
+With a local service checkout, run `scripts/update_response_contract.cjs` as
+described in [contract status](api-contract.md) to verify snapshot/fixture parity.
+Node is only needed for that maintenance check. The SDK itself requires Go only.
+The initial-publication counts above are historical; use current test output and
+[GitHub Actions](https://github.com/flashdatadev/flashdata-go/actions) for current results.
+
 ## Practical limits
 
 The new `/v2/api-access/identity` endpoint remains a tested local backend patch awaiting deployment. Agent onboarding is feature-gated; a deployment can return 404. The SDK fails closed rather than inventing ownership. Live credentials, cloud-provider permissions, external callback delivery and browser claim/handoff installation still require validation against an explicitly authorized deployment.

@@ -6,7 +6,19 @@ This records the local review before initial GitHub source publication. Current 
 
 The Go SDK remains a local 1.0.0 candidate. This review compared the source catalog, bulk options, agent registration policy and response behavior with the local backend, and checked parity with the Python and TypeScript SDK snapshots. All 15 source schemas and the original 24 REST operations are retained. Go additionally exposes verified key identity and the eight machine-side onboarding methods; browser-session operations stay in the FlashData website.
 
-## Fixes
+## Response-format review
+
+Current source adds `WithFormat` methods while preserving existing typed JSON
+signatures and serialization. The review checks all 14 realtime sources, all 15
+stored-result sources, generated background helpers, receipt/status envelopes,
+metadata, recovery IDs, structured errors, UTF-8, gzip bounds and cancellation.
+JSON tags on existing models remain compatible with v1.0.0.
+
+The full suite executes the new command-line example and the response-format guide's
+Go recipes. Stored-result fixtures use completed job envelopes, matching IDs and
+completion/expiry metadata. See [response formats](response-formats.md).
+
+## Initial publication fixes
 
 - Authentication mode is independent of the proof value. A proof whose literal value is `key` uses only `Authorization: Bearer`; it cannot select the client's API-key header.
 - Signed storage errors redact decoded and escaped signature/credential/token values, including response metadata. Storage, service-account and signed-upload models redact ordinary diagnostic formatting while retaining their JSON wire representation.

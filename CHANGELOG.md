@@ -4,6 +4,11 @@
 
 ## Unreleased
 
+Add per-call `WithFormat` methods for JSON, plain text and Markdown. Realtime and
+completed-result reads accept `ContentOptions`; receipts and status accept
+`ResponseOptions`. Existing typed JSON methods are unchanged. Include generated
+Markdown models, response-format examples and API-derived fixtures for all sources.
+
 Add English/Chinese workflow selectors, an uploaded-caption recipe, MP4 bulk option-file support in the runnable example, and a shared SDK/CLI comparison. The current examples are fetched from main; the SDK API remains compatible with module v1.0.0.
 
 ## 1.0.0

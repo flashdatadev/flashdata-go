@@ -21,6 +21,23 @@ Offline helpers are available to applications such as the CLI: `Sources()` retur
 
 `SubmissionUnknownError.JobIDs` preserves valid job IDs from inconsistent async, batch or bulk responses. Reconcile these candidates using the original account; the error still means the complete submission outcome is unknown. Normal Go formatting redacts storage and signed-upload credentials; JSON remains suitable for requests and caller-owned secure persistence.
 
+## Response formats
+
+Existing methods return typed JSON. Use `WithFormat` methods to choose headers per
+call and receive a `FormattedResponse`: raw JSON is in `JSON`, plain text in `Text`,
+and `DecodeJSON(&model)` decodes JSON.
+
+| Methods | Options |
+| --- | --- |
+| `Queries.RealtimeWithFormat`, all 14 realtime source `WithFormat` helpers, `Jobs.ResultWithFormat` | `ContentOptions{Accept, RespondWith}` |
+| `Queries.SubmitWithFormat`, `Queries.BatchWithFormat`, all 15 background source `WithFormat` helpers, `Jobs.GetWithFormat` | `ResponseOptions{Accept}` |
+
+`AcceptJSON` is the default; `AcceptText` selects plain text independently.
+`RespondMarkdown` replaces `results` with Markdown `content` in JSON, or returns
+metadata followed by Markdown as text. `Jobs.GetWithFormat` preserves the outer
+`job` field; `Jobs.Get` unwraps it. Polling, pagination, Bulk, account, public and
+onboarding keep their formats. See the [format guide](response-formats.md).
+
 ## REST operations
 
 | Method | Path | Operation |

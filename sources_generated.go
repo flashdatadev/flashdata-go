@@ -8,6 +8,11 @@ func (r *GoogleService) Search(ctx context.Context, input GoogleSearchInput) (*D
 	return r.c.Queries.Realtime(ctx, input.Request())
 }
 
+// SearchWithFormat runs google_search with JSON, text or Markdown response headers.
+func (r *GoogleService) SearchWithFormat(ctx context.Context, input GoogleSearchInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
+}
+
 // SearchAsync submits google_search. Save the returned job ID before polling.
 func (r *GoogleService) SearchAsync(ctx context.Context, input GoogleSearchInput, callbackURL string) (*AsyncSubmission, error) {
 	q := input.Request()
@@ -15,9 +20,21 @@ func (r *GoogleService) SearchAsync(ctx context.Context, input GoogleSearchInput
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// SearchAsyncWithFormat submits google_search with a JSON or plain-text receipt.
+func (r *GoogleService) SearchAsyncWithFormat(ctx context.Context, input GoogleSearchInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Images runs google_images in realtime.
 func (r *GoogleService) Images(ctx context.Context, input GoogleImagesInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// ImagesWithFormat runs google_images with JSON, text or Markdown response headers.
+func (r *GoogleService) ImagesWithFormat(ctx context.Context, input GoogleImagesInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // ImagesAsync submits google_images. Save the returned job ID before polling.
@@ -27,9 +44,21 @@ func (r *GoogleService) ImagesAsync(ctx context.Context, input GoogleImagesInput
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// ImagesAsyncWithFormat submits google_images with a JSON or plain-text receipt.
+func (r *GoogleService) ImagesAsyncWithFormat(ctx context.Context, input GoogleImagesInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // News runs google_news in realtime.
 func (r *GoogleService) News(ctx context.Context, input GoogleNewsInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// NewsWithFormat runs google_news with JSON, text or Markdown response headers.
+func (r *GoogleService) NewsWithFormat(ctx context.Context, input GoogleNewsInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // NewsAsync submits google_news. Save the returned job ID before polling.
@@ -39,9 +68,21 @@ func (r *GoogleService) NewsAsync(ctx context.Context, input GoogleNewsInput, ca
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// NewsAsyncWithFormat submits google_news with a JSON or plain-text receipt.
+func (r *GoogleService) NewsAsyncWithFormat(ctx context.Context, input GoogleNewsInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Shopping runs google_shopping in realtime.
 func (r *GoogleService) Shopping(ctx context.Context, input GoogleShoppingInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// ShoppingWithFormat runs google_shopping with JSON, text or Markdown response headers.
+func (r *GoogleService) ShoppingWithFormat(ctx context.Context, input GoogleShoppingInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // ShoppingAsync submits google_shopping. Save the returned job ID before polling.
@@ -51,9 +92,21 @@ func (r *GoogleService) ShoppingAsync(ctx context.Context, input GoogleShoppingI
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// ShoppingAsyncWithFormat submits google_shopping with a JSON or plain-text receipt.
+func (r *GoogleService) ShoppingAsyncWithFormat(ctx context.Context, input GoogleShoppingInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Videos runs google_videos in realtime.
 func (r *GoogleService) Videos(ctx context.Context, input GoogleVideosInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// VideosWithFormat runs google_videos with JSON, text or Markdown response headers.
+func (r *GoogleService) VideosWithFormat(ctx context.Context, input GoogleVideosInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // VideosAsync submits google_videos. Save the returned job ID before polling.
@@ -63,9 +116,21 @@ func (r *GoogleService) VideosAsync(ctx context.Context, input GoogleVideosInput
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// VideosAsyncWithFormat submits google_videos with a JSON or plain-text receipt.
+func (r *GoogleService) VideosAsyncWithFormat(ctx context.Context, input GoogleVideosInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Places runs google_places in realtime.
 func (r *GoogleService) Places(ctx context.Context, input GooglePlacesInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// PlacesWithFormat runs google_places with JSON, text or Markdown response headers.
+func (r *GoogleService) PlacesWithFormat(ctx context.Context, input GooglePlacesInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // PlacesAsync submits google_places. Save the returned job ID before polling.
@@ -75,9 +140,21 @@ func (r *GoogleService) PlacesAsync(ctx context.Context, input GooglePlacesInput
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// PlacesAsyncWithFormat submits google_places with a JSON or plain-text receipt.
+func (r *GoogleService) PlacesAsyncWithFormat(ctx context.Context, input GooglePlacesInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Search runs youtube_search in realtime.
 func (r *YouTubeService) Search(ctx context.Context, input YouTubeSearchInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// SearchWithFormat runs youtube_search with JSON, text or Markdown response headers.
+func (r *YouTubeService) SearchWithFormat(ctx context.Context, input YouTubeSearchInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // SearchAsync submits youtube_search. Save the returned job ID before polling.
@@ -87,9 +164,21 @@ func (r *YouTubeService) SearchAsync(ctx context.Context, input YouTubeSearchInp
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// SearchAsyncWithFormat submits youtube_search with a JSON or plain-text receipt.
+func (r *YouTubeService) SearchAsyncWithFormat(ctx context.Context, input YouTubeSearchInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // SearchExtended runs youtube_search_extended in realtime.
 func (r *YouTubeService) SearchExtended(ctx context.Context, input YouTubeSearchExtendedInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// SearchExtendedWithFormat runs youtube_search_extended with JSON, text or Markdown response headers.
+func (r *YouTubeService) SearchExtendedWithFormat(ctx context.Context, input YouTubeSearchExtendedInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // SearchExtendedAsync submits youtube_search_extended. Save the returned job ID before polling.
@@ -99,9 +188,21 @@ func (r *YouTubeService) SearchExtendedAsync(ctx context.Context, input YouTubeS
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// SearchExtendedAsyncWithFormat submits youtube_search_extended with a JSON or plain-text receipt.
+func (r *YouTubeService) SearchExtendedAsyncWithFormat(ctx context.Context, input YouTubeSearchExtendedInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Metadata runs youtube_metadata in realtime.
 func (r *YouTubeService) Metadata(ctx context.Context, input YouTubeMetadataInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// MetadataWithFormat runs youtube_metadata with JSON, text or Markdown response headers.
+func (r *YouTubeService) MetadataWithFormat(ctx context.Context, input YouTubeMetadataInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // MetadataAsync submits youtube_metadata. Save the returned job ID before polling.
@@ -111,9 +212,21 @@ func (r *YouTubeService) MetadataAsync(ctx context.Context, input YouTubeMetadat
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// MetadataAsyncWithFormat submits youtube_metadata with a JSON or plain-text receipt.
+func (r *YouTubeService) MetadataAsyncWithFormat(ctx context.Context, input YouTubeMetadataInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Transcript runs youtube_transcript in realtime.
 func (r *YouTubeService) Transcript(ctx context.Context, input YouTubeTranscriptInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// TranscriptWithFormat runs youtube_transcript with JSON, text or Markdown response headers.
+func (r *YouTubeService) TranscriptWithFormat(ctx context.Context, input YouTubeTranscriptInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // TranscriptAsync submits youtube_transcript. Save the returned job ID before polling.
@@ -123,9 +236,21 @@ func (r *YouTubeService) TranscriptAsync(ctx context.Context, input YouTubeTrans
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// TranscriptAsyncWithFormat submits youtube_transcript with a JSON or plain-text receipt.
+func (r *YouTubeService) TranscriptAsyncWithFormat(ctx context.Context, input YouTubeTranscriptInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Captions runs youtube_captions in realtime.
 func (r *YouTubeService) Captions(ctx context.Context, input YouTubeCaptionsInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// CaptionsWithFormat runs youtube_captions with JSON, text or Markdown response headers.
+func (r *YouTubeService) CaptionsWithFormat(ctx context.Context, input YouTubeCaptionsInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // CaptionsAsync submits youtube_captions. Save the returned job ID before polling.
@@ -135,9 +260,21 @@ func (r *YouTubeService) CaptionsAsync(ctx context.Context, input YouTubeCaption
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// CaptionsAsyncWithFormat submits youtube_captions with a JSON or plain-text receipt.
+func (r *YouTubeService) CaptionsAsyncWithFormat(ctx context.Context, input YouTubeCaptionsInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // LicenseCheck runs youtube_trainability in realtime.
 func (r *YouTubeService) LicenseCheck(ctx context.Context, input YouTubeTrainabilityInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// LicenseCheckWithFormat runs youtube_trainability with JSON, text or Markdown response headers.
+func (r *YouTubeService) LicenseCheckWithFormat(ctx context.Context, input YouTubeTrainabilityInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // LicenseCheckAsync submits youtube_trainability. Save the returned job ID before polling.
@@ -147,9 +284,21 @@ func (r *YouTubeService) LicenseCheckAsync(ctx context.Context, input YouTubeTra
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// LicenseCheckAsyncWithFormat submits youtube_trainability with a JSON or plain-text receipt.
+func (r *YouTubeService) LicenseCheckAsyncWithFormat(ctx context.Context, input YouTubeTrainabilityInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Channel runs youtube_channel in realtime.
 func (r *YouTubeService) Channel(ctx context.Context, input YouTubeChannelInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// ChannelWithFormat runs youtube_channel with JSON, text or Markdown response headers.
+func (r *YouTubeService) ChannelWithFormat(ctx context.Context, input YouTubeChannelInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // ChannelAsync submits youtube_channel. Save the returned job ID before polling.
@@ -159,9 +308,21 @@ func (r *YouTubeService) ChannelAsync(ctx context.Context, input YouTubeChannelI
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// ChannelAsyncWithFormat submits youtube_channel with a JSON or plain-text receipt.
+func (r *YouTubeService) ChannelAsyncWithFormat(ctx context.Context, input YouTubeChannelInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Suggestions runs youtube_suggestions in realtime.
 func (r *YouTubeService) Suggestions(ctx context.Context, input YouTubeSuggestionsInput) (*DataQueryResponse, error) {
 	return r.c.Queries.Realtime(ctx, input.Request())
+}
+
+// SuggestionsWithFormat runs youtube_suggestions with JSON, text or Markdown response headers.
+func (r *YouTubeService) SuggestionsWithFormat(ctx context.Context, input YouTubeSuggestionsInput, options ContentOptions) (*FormattedResponse, error) {
+	return r.c.Queries.RealtimeWithFormat(ctx, input.Request(), options)
 }
 
 // SuggestionsAsync submits youtube_suggestions. Save the returned job ID before polling.
@@ -171,9 +332,23 @@ func (r *YouTubeService) SuggestionsAsync(ctx context.Context, input YouTubeSugg
 	return r.c.Queries.Submit(ctx, q)
 }
 
+// SuggestionsAsyncWithFormat submits youtube_suggestions with a JSON or plain-text receipt.
+func (r *YouTubeService) SuggestionsAsyncWithFormat(ctx context.Context, input YouTubeSuggestionsInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
+}
+
 // Download submits youtube_download. Save the returned job ID before polling.
 func (r *YouTubeService) Download(ctx context.Context, input YouTubeDownloadInput, callbackURL string) (*AsyncSubmission, error) {
 	q := input.Request()
 	q.CallbackURL = callbackURL
 	return r.c.Queries.Submit(ctx, q)
+}
+
+// DownloadWithFormat submits youtube_download with a JSON or plain-text receipt.
+func (r *YouTubeService) DownloadWithFormat(ctx context.Context, input YouTubeDownloadInput, callbackURL string, options ResponseOptions) (*FormattedResponse, error) {
+	q := input.Request()
+	q.CallbackURL = callbackURL
+	return r.c.Queries.SubmitWithFormat(ctx, q, options)
 }

@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -39,6 +40,9 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 	if err = json.Unmarshal(b, &fixtures); err != nil {
 		t.Fatal(err)
 	}
+	storedFixtures := readFormatFixtures(t, "stored-result-formats.json")
+	var jobMu sync.Mutex
+	jobSource := SourceYouTubeMetadata
 	part := gzipBytes(t, "{\"index\":0,\"source\":\"youtube_download\",\"video_id\":\"dQw4w9WgXcQ\",\"status\":\"completed\",\"results\":[]}\n")
 	var requests, creations, videoCreations atomic.Int32
 	var failNextStart atomic.Bool
@@ -61,6 +65,9 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 		if r.URL.Path == "/v1/queries" {
 			var q Query
 			_ = json.NewDecoder(r.Body).Decode(&q)
+			jobMu.Lock()
+			jobSource = q.Source
+			jobMu.Unlock()
 			respond(w, map[string]any{"id": "job_example", "source": q.Source, "status": "pending"})
 			return
 		}
@@ -115,9 +122,16 @@ func TestRunnableExamplesAndReadmes(t *testing.T) {
 		case "/v2/bulk-jobs/bulk_examples/results/0":
 			_, _ = w.Write(part)
 		case "/v2/jobs/job_example":
-			respond(w, map[string]any{"job": map[string]any{"id": "job_example", "status": "completed"}})
+			jobMu.Lock()
+			source := jobSource
+			jobMu.Unlock()
+			respond(w, map[string]any{"job": map[string]any{"id": "job_example", "source": source, "status": "completed"}})
 		case "/v2/jobs/job_example/results":
-			respond(w, map[string]any{"id": "job_example", "status": "done", "results": []any{map[string]any{"ok": true}}})
+			jobMu.Lock()
+			source := jobSource
+			jobMu.Unlock()
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(strings.ReplaceAll(string(storedFixtures[source][0].Response), "job_fixture0001", "job_example")))
 		default:
 			t.Error("example requested unknown route", r.Method, r.URL.Path)
 			w.WriteHeader(500)

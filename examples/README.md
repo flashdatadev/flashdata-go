@@ -4,8 +4,24 @@
 
 Run these from the repository root after `go mod download`. Supply the key explicitly through `FLASHDATA_API_KEY`; each program passes it to `flashdata.New`. All example programs accept optional `FLASHDATA_DATA_ORIGIN` and `FLASHDATA_MANAGEMENT_ORIGIN` overrides, permitting loopback fixtures. Never point an offline test at a live paid endpoint.
 
+Choose response headers with the `response_formats` example:
+
+```bash
+go run ./examples/response_formats -accept text/plain
+go run ./examples/response_formats -accept text/plain -respond-with markdown
+go run ./examples/response_formats -operation status -job YOUR_JOB_ID -accept text/plain
+go run ./examples/response_formats -operation result -job YOUR_JOB_ID -respond-with markdown
+```
+
+Each realtime, submit or batch run creates new work. Status and result runs read
+an existing job. Use `-input` for a source query JSON object or a query array for
+batches; `-operation submit`
+and `-operation batch` support `-accept`, with Markdown chosen on result reads.
+See [response formats](../docs/response-formats.md).
+
 | Directory | Purpose |
 | --- | --- |
+| [response_formats](response_formats/main.go) | Choose JSON, plain text or Markdown for realtime queries, submissions, batches, status or result reads |
 | [account](account/main.go) | Free API-key balance read |
 | [background](background/main.go) | Submit once, persist ID, wait/fetch or recover by -job |
 | [batch](batch/main.go) | Mixed-source background batch |

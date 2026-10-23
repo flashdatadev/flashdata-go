@@ -4,6 +4,11 @@
 
 See the [current SDK and CLI comparison](sdk-parity.md) for all language entry points, README workflows and recovery behavior.
 
+Current source also supports JSON, plain text and Markdown through Go `WithFormat`
+methods. Python and TypeScript provide the same API response choices through per-call
+options. These additions are not included in the v1.0.0 versions compared below.
+See [response formats](response-formats.md).
+
 | Capability | Python 1.0.0 | TypeScript 1.0.0 | Go 1.0.0 |
 | --- | --- | --- | --- |
 | Existing developer REST operations | 24 | 24 | Same 24 |

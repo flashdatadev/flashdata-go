@@ -81,7 +81,23 @@ def main():
         f"module local.example/consumer\n\ngo 1.25.0\n\nrequire {MODULE} {VERSION}\n"
     )
     (consumer / "main.go").write_text(
-        'package main\nimport ("fmt"; flashdata "github.com/flashdatadev/flashdata-go")\nfunc main(){c,err:=flashdata.New(flashdata.Options{APIKey:"fd_offline"});if err!=nil{panic(err)};_ = c;fmt.Println(flashdata.Version)}\n'
+        """package main
+import ("context";"fmt";"io";"net/http";"strings";flashdata "github.com/flashdatadev/flashdata-go")
+type transport struct{}
+func (transport) RoundTrip(r *http.Request)(*http.Response,error){
+ if r.Header.Get("Accept")!="text/plain" || r.Header.Get("X-Respond-With")!="markdown" {panic("missing format headers")}
+ return &http.Response{StatusCode:200,Header:http.Header{"Content-Type":[]string{"text/plain; charset=utf-8"}},Body:io.NopCloser(strings.NewReader("# Offline Markdown"))},nil
+}
+func main(){
+ c,err:=flashdata.New(flashdata.Options{APIKey:"fd_offline",HTTPClient:&http.Client{Transport:transport{}}});if err!=nil{panic(err)}
+ response,err:=c.Google.SearchWithFormat(context.Background(),flashdata.GoogleSearchInput{Query:"offline"},flashdata.ContentOptions{Accept:flashdata.AcceptText,RespondWith:flashdata.RespondMarkdown});if err!=nil || response.Text!="# Offline Markdown"{panic("formatted consumer failed")}
+ var model flashdata.MarkdownQueryResult
+ response=&flashdata.FormattedResponse{JSON:[]byte(`{"source":"google_search","status":"completed","content":"# Offline Markdown","id":"job_example","completed_at":"2026-10-23T00:00:00Z"}`)}
+ if err=response.DecodeJSON(&model);err!=nil || model.ID!="job_example" || model.CompletedAt==""{panic("Markdown model failed")}
+ fmt.Println(flashdata.Version)
+}
+""",
+        encoding="utf-8",
     )
     env = os.environ.copy()
     env.update(

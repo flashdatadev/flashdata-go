@@ -23,6 +23,10 @@
 
 ## 安装
 
+本文介绍的响应格式方法已加入 `main` 源码；已发布的 v1.0.0 版本保留原有 JSON
+方法。在下个版本发布前，可运行 `go get github.com/flashdatadev/flashdata-go@main`
+获取新方法。
+
 需要 **Go 1.25+**。在应用的 Go 模块中运行：
 
 ```bash
@@ -94,6 +98,20 @@ go run .
 程序会以 JSON 输出结构化 Google 搜索结果，包括网页标题、链接和摘要。查询和任务会消耗账户额度，参见[价格](https://flashdata.dev/pricing)。
 
 请显式传入 `APIKey`。此处由应用读取 `FLASHDATA_API_KEY`；SDK 本身不会读取环境变量或自动加载 `.env` 文件。
+
+## JSON、纯文本和 Markdown
+
+JSON 仍为默认格式。使用 `Google.SearchWithFormat`、
+`YouTube.TranscriptWithFormat` 或 `Jobs.ResultWithFormat`，传入
+`ContentOptions{Accept: AcceptText}` 可获取纯文本；增加
+`RespondWith: RespondMarkdown` 可选择 Markdown 内容。纯文本读取 `response.Text`，
+JSON 读取 `response.JSON`，也可使用 `response.DecodeJSON(&model)` 解码。
+类型和常量均属于 `flashdata` 包。
+
+提交、批量提交和任务状态的 `WithFormat` 方法使用 `ResponseOptions` 选择 JSON 或
+纯文本。Markdown 仅适用于实时查询和已完成结果。现有类型化方法、轮询和分页仍返回
+JSON。参见[响应格式指南](docs/response-formats.md)和
+[可运行示例](examples/response_formats/main.go)。
 
 ## 常用功能
 

@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime"
 	"net"
 	"net/http"
 	"net/url"
@@ -153,6 +154,10 @@ type requestAuth struct {
 
 // raw never follows redirects. Bearer credentials replace API-key authentication.
 func (c *Client) raw(ctx context.Context, method, target string, body io.Reader, size int64, contentType string, auth requestAuth, mutation bool, budgets ...time.Duration) (*http.Response, context.CancelFunc, error) {
+	return c.rawWithFormat(ctx, method, target, body, size, contentType, auth, mutation, ContentOptions{}, budgets...)
+}
+
+func (c *Client) rawWithFormat(ctx context.Context, method, target string, body io.Reader, size int64, contentType string, auth requestAuth, mutation bool, format ContentOptions, budgets ...time.Duration) (*http.Response, context.CancelFunc, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, nil, err
 	}
@@ -170,6 +175,12 @@ func (c *Client) raw(ctx context.Context, method, target string, body io.Reader,
 		req.ContentLength = size
 	}
 	req.Header.Set("Accept", "application/json")
+	if format.Accept != "" {
+		req.Header.Set("Accept", string(format.Accept))
+	}
+	if format.RespondWith != "" {
+		req.Header.Set("X-Respond-With", string(format.RespondWith))
+	}
 	// Result parts are gzip files themselves. Request identity encoding so the
 	// HTTP transport cannot silently decompress a part before IterRows sees it.
 	req.Header.Set("Accept-Encoding", "identity")
@@ -257,6 +268,10 @@ func (c *Client) apiError(resp *http.Response, b []byte, secrets ...string) erro
 }
 
 func (c *Client) request(ctx context.Context, method, path string, body any, out any, data, public bool, bearer string) error {
+	return c.requestWithFormat(ctx, method, path, body, out, data, public, bearer, ContentOptions{})
+}
+
+func (c *Client) requestWithFormat(ctx context.Context, method, path string, body any, out any, data, public bool, bearer string, format ContentOptions) error {
 	base := c.managementOrigin + "/v2"
 	if data {
 		base = c.dataOrigin
@@ -279,13 +294,19 @@ func (c *Client) request(ctx context.Context, method, path string, body any, out
 		size = int64(len(b))
 	}
 	mutation := method != "GET" && method != "HEAD"
-	resp, cancel, err := c.raw(ctx, method, base+path, reader, size, "application/json", auth, mutation)
+	resp, cancel, err := c.rawWithFormat(ctx, method, base+path, reader, size, "application/json", auth, mutation, format)
 	if err != nil {
 		return err
 	}
 	defer cancel()
 	defer resp.Body.Close()
-	b, err := c.read(resp)
+	formatted, isFormatted := out.(*FormattedResponse)
+	var b []byte
+	if isFormatted {
+		b, err = c.readFormatted(ctx, resp)
+	} else {
+		b, err = c.read(resp)
+	}
 	if err != nil {
 		if mutation && resp.StatusCode >= 200 && resp.StatusCode < 300 {
 			return &SubmissionUnknownError{Cause: err}
@@ -297,6 +318,22 @@ func (c *Client) request(ctx context.Context, method, path string, body any, out
 	}
 	if out == nil {
 		return nil
+	}
+	if isFormatted {
+		expected := string(format.Accept)
+		if expected == "" {
+			expected = string(AcceptJSON)
+		}
+		media, params, parseErr := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if parseErr != nil || media != expected || (params["charset"] != "" && !strings.EqualFold(params["charset"], "utf-8")) {
+			err = &ProtocolError{"unexpected response content type"}
+		} else {
+			err = formatted.setBody(b, format.Accept)
+		}
+		if err != nil && mutation {
+			return &SubmissionUnknownError{Cause: err}
+		}
+		return err
 	}
 	if len(b) == 0 || b[0] == '[' || strings.TrimSpace(string(b)) == "null" {
 		err = fmt.Errorf("not an object")
@@ -359,7 +396,7 @@ func (c *Client) trustedResultOrigin(ctx context.Context) (string, error) {
 
 // resultStream authenticates only the management hop, then checks the exact
 // server-approved storage origin before sending an unsigned request there.
-func (c *Client) resultStream(ctx context.Context, path string) (io.ReadCloser, error) {
+func (c *Client) resultStream(ctx context.Context, path string) (*cancelReader, error) {
 	resp, cancel, err := c.raw(ctx, "GET", c.managementOrigin+"/v2"+path, nil, 0, "", requestAuth{apiKey: true}, false)
 	if err != nil {
 		return nil, err
@@ -390,18 +427,19 @@ func (c *Client) resultStream(ctx context.Context, path string) (io.ReadCloser, 
 	if resp.StatusCode != http.StatusOK {
 		defer cancel()
 		defer resp.Body.Close()
-		b, err := c.read(resp)
+		b, err := c.readFormatted(ctx, resp)
 		if err != nil {
 			return nil, err
 		}
 		return nil, c.apiError(resp, b, secrets...)
 	}
-	return &cancelReader{ReadCloser: resp.Body, cancel: cancel}, nil
+	return &cancelReader{ReadCloser: resp.Body, cancel: cancel, response: resp}, nil
 }
 
 type cancelReader struct {
 	io.ReadCloser
-	cancel context.CancelFunc
+	cancel   context.CancelFunc
+	response *http.Response
 }
 
 func (r *cancelReader) Close() error { err := r.ReadCloser.Close(); r.cancel(); return err }
@@ -412,7 +450,7 @@ func (c *Client) resultJSON(ctx context.Context, path string, out any) error {
 		return err
 	}
 	defer r.Close()
-	b, err := c.read(&http.Response{Body: r})
+	b, err := c.readFormatted(ctx, r.response)
 	if err != nil {
 		return err
 	}

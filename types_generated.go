@@ -608,6 +608,33 @@ type UsageCounts struct {
 	Credits   float64 `json:"credits"`
 }
 
+// MarkdownQueryResult is a management or data API response.
+type MarkdownQueryResult struct {
+	Source      string                     `json:"source"`
+	Status      string                     `json:"status"`
+	Content     string                     `json:"content"`
+	Usage       map[string]json.RawMessage `json:"usage,omitempty"`
+	ID          string                     `json:"id,omitempty"`
+	CreatedAt   string                     `json:"created_at,omitempty"`
+	CompletedAt string                     `json:"completed_at,omitempty"`
+	ExpiresAt   string                     `json:"expires_at,omitempty"`
+}
+
+// DataQueryError is a management or data API response.
+type DataQueryError struct {
+	Error   bool   `json:"error"`
+	Message string `json:"message"`
+	Code    string `json:"code,omitempty"`
+	Field   string `json:"field,omitempty"`
+}
+
+// QueryRepresentationError is a management or data API response.
+type QueryRepresentationError struct {
+	Error   bool   `json:"error"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
 // GoogleSearchPayload is a management or data API response.
 type GoogleSearchPayload struct {
 	SearchParameters GoogleSearchPayloadSearchParameters      `json:"searchParameters,omitempty"`
