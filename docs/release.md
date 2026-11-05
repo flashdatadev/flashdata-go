@@ -2,12 +2,12 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
-Install the official Go 1.25+ module with
-`go get github.com/flashdatadev/flashdata-go@v1.1.0`. Version 1.1.0 adds per-call
-JSON, plain-text and Markdown options. Existing typed JSON methods remain compatible.
-See the [release notes](release-notes-1.1.0.md) and [format examples](response-formats.md).
+Install with `go get github.com/flashdatadev/flashdata-go@v1.2.0` (Go 1.25+).
+Version 1.2.0 adds multiple transcript/caption languages and per-language results.
+Read the [release notes](release-notes-1.2.0.md). Existing single-language calls and
+JSON response defaults remain compatible.
 
-The [GitHub release](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.1.0)
+The [GitHub release](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.2.0)
 includes the canonical Go module ZIP, `.mod` and `.info` files, both READMEs,
 release notes, a build report and `SHA256SUMS`. The tag, module archive and attached
 documentation identify the same source commit. Go modules are distributed through
