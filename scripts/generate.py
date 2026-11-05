@@ -51,6 +51,9 @@ def gotype(s, hint):
     if isinstance(t, list):
         t = next((v for v in t if v != "null"), None)
     union = s.get("oneOf", s.get("anyOf", []))
+    if union and hint in ("YouTubeTranscriptParamsLanguage", "YouTubeCaptionsParamsLanguage"):
+        # Keep the published single-language field; Languages supplies the array.
+        return "*string"
     if union:
         real = [v for v in union if v.get("type") != "null"]
         if len(real) == 1:
@@ -179,6 +182,18 @@ for source, fixture in FIXTURES.items():
     payloads = fixture.get("response", {}).get("results", [])
     if payloads:
         models[name(source) + "Payload"] = infer(payloads)
+# Multi-language subtitle results coexist with the original single-track fields.
+subtitle_track = infer(FIXTURES["youtube_transcript"]["response"]["results"])
+models["YouTubeSubtitleTrack"] = subtitle_track
+models["YouTubeSubtitleError"] = {
+    "type": "object", "required": ["languageCode", "code", "message"],
+    "properties": {key: {"type": "string"} for key in ("languageCode", "code", "message")},
+}
+for source in ("youtube_transcript", "youtube_captions"):
+    models[name(source) + "Payload"]["properties"].update({
+        "tracks": {"type": "array", "items": {"$ref": "#/components/schemas/YouTubeSubtitleTrack"}},
+        "errors": {"type": "array", "items": {"$ref": "#/components/schemas/YouTubeSubtitleError"}},
+    })
 seen = set()
 while True:
     pending = [n for n in models if n not in seen]
@@ -205,9 +220,13 @@ while True:
                 request_model
                 and not required
                 and not typ.startswith(("*", "[]", "map["))
-                and typ != "json.RawMessage"
+                and typ not in ("json.RawMessage", "any")
             ):
                 typ = "*" + typ
+            if n in ("YouTubeTranscriptParams", "YouTubeCaptionsParams") and field == "language":
+                out.append('// Languages selects 1–10 distinct codes. Set either Language or Languages, not both.')
+                out.append('Languages []string `json:"-"`')
+                out.append('// Language selects one exact code. Omit both language fields to prefer en-orig, then en.')
             out.append(
                 f'{name(field)} {typ} `json:"{field}{"" if required else ",omitempty"}"`'
             )

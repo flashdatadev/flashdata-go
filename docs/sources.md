@@ -157,8 +157,26 @@ Modes: realtime, async, batch.
 | Parameter | Type | Required | Constraints |
 | --- | --- | --- | --- |
 | `video_id` | string | yes | {"minLength": 11, "maxLength": 11, "pattern": "^[A-Za-z0-9_-]{11}$"} |
-| `language` | string | no | {"minLength": 1, "maxLength": 35, "pattern": "^[A-Za-z0-9-]+$", "default": "en"} |
+| `language` | string or array | no | 1–10 distinct codes; each code matches `[A-Za-z0-9-]{1,35}`. Omitted: `en-orig`, then `en`. |
 | `auto` | boolean | no | {"default": true} |
+
+Omit `language` to prefer `en-orig`, falling back to `en` and returning one track.
+A string such as `"en"` selects that exact language and keeps the single-track response.
+An array of 1–10 distinct codes, including a one-element array, returns `tracks` and
+`errors` inside each result. Each code must match `[A-Za-z0-9-]{1,35}`.
+
+Read successful tracks even when another language fails. Each error includes
+`languageCode`, `code` (`language_unavailable` or `retrieval_failed`) and `message`.
+Both lists preserve request order; if all requested languages fail, `tracks` is empty.
+Video-level extraction failures still fail the request. Explicit languages never fall
+back to other languages. `auto` selects one caption source for the whole request:
+`true` for automatic captions, `false` for uploaded captions. It defaults to `true`
+for transcripts and `false` for captions, with no switch between the two.
+
+`Language: flashdata.Ptr("en")` selects one track. Use
+`Languages: []string{"en", "es"}` for several; set only one of these fields.
+Leave both nil for the default. Decode results into `YouTubeTranscriptPayload` or
+`YouTubeCaptionsPayload`; `Tracks` and `Errors` hold multi-language output.
 
 ## youtube_captions
 
@@ -169,8 +187,26 @@ Modes: realtime, async, batch.
 | Parameter | Type | Required | Constraints |
 | --- | --- | --- | --- |
 | `video_id` | string | yes | {"minLength": 11, "maxLength": 11, "pattern": "^[A-Za-z0-9_-]{11}$"} |
-| `language` | string | no | {"minLength": 1, "maxLength": 35, "pattern": "^[A-Za-z0-9-]+$", "default": "en"} |
+| `language` | string or array | no | 1–10 distinct codes; each code matches `[A-Za-z0-9-]{1,35}`. Omitted: `en-orig`, then `en`. |
 | `auto` | boolean | no | {"default": false} |
+
+Omit `language` to prefer `en-orig`, falling back to `en` and returning one track.
+A string such as `"en"` selects that exact language and keeps the single-track response.
+An array of 1–10 distinct codes, including a one-element array, returns `tracks` and
+`errors` inside each result. Each code must match `[A-Za-z0-9-]{1,35}`.
+
+Read successful tracks even when another language fails. Each error includes
+`languageCode`, `code` (`language_unavailable` or `retrieval_failed`) and `message`.
+Both lists preserve request order; if all requested languages fail, `tracks` is empty.
+Video-level extraction failures still fail the request. Explicit languages never fall
+back to other languages. `auto` selects one caption source for the whole request:
+`true` for automatic captions, `false` for uploaded captions. It defaults to `true`
+for transcripts and `false` for captions, with no switch between the two.
+
+`Language: flashdata.Ptr("en")` selects one track. Use
+`Languages: []string{"en", "es"}` for several; set only one of these fields.
+Leave both nil for the default. Decode results into `YouTubeTranscriptPayload` or
+`YouTubeCaptionsPayload`; `Tracks` and `Errors` hold multi-language output.
 
 ## youtube_trainability
 

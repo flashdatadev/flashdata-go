@@ -99,6 +99,8 @@ The program prints structured Google search results as JSON, including page titl
 
 Pass `APIKey` explicitly. Here your application reads `FLASHDATA_API_KEY`; the SDK does not read environment variables or `.env` files on its own.
 
+Transcript and captions accept one language or a list of 1–10 codes. Omit the language to prefer `en-orig`, then `en`. Multi-language results include available tracks and per-language errors. See [subtitle languages](docs/sources.md#youtube_transcript).
+
 ## JSON, plain text and Markdown
 
 JSON remains the default. Use `Google.SearchWithFormat`,

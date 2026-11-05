@@ -42,3 +42,10 @@ The example reserves the recovery file atomically before job creation, syncs the
 ## Streaming
 
 `Manifest` validates the requested job ID and unique nonnegative part numbers; `Rows` follows their manifest order using authenticated management result routes, never arbitrary manifest hrefs. `IterRows` handles one gzip NDJSON part with strict UTF-8, object rows, CRLF/blank lines and an unterminated final row. Invalid JSON, truncated gzip, oversized compressed/decompressed parts and oversized rows fail explicitly. Breaking out of the iterator closes readers. `Part` returns bounded compressed bytes for callers that manage decoding themselves. Cancellation and request deadlines remain recognizable through `errors.Is` even during compressed reads, gzip headers and NDJSON streaming. CRLF separators do not consume the configured JSON row limit. Keep the client's HTTP timeout or a caller context long enough for the size of each part.
+
+## Subtitle languages
+
+For `youtube_transcript` and `youtube_captions`, use shared options such as
+`{"language":["en","es"],"auto":true}`. Omit `language` to prefer `en-orig`, then `en`.
+Bulk exports remain JSONL with one record per video; inspect `tracks` and `errors`
+inside each result for available languages and partial failures.

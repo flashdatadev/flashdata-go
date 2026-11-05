@@ -97,6 +97,8 @@ go run .
 
 请显式传入 `APIKey`。此处由应用读取 `FLASHDATA_API_KEY`；SDK 本身不会读取环境变量或自动加载 `.env` 文件。
 
+转录和字幕支持单个语言代码或 1–10 个代码的列表。省略语言时优先使用 `en-orig`，其次使用 `en`，返回一条字幕。多语言结果保留可用字幕及逐语言错误。参见[字幕语言说明](docs/sources.md#youtube_transcript)。
+
 ## JSON、纯文本和 Markdown
 
 JSON 仍为默认格式。使用 `Google.SearchWithFormat`、

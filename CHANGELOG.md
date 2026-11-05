@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Support single or multiple transcript/caption languages, omitted-language fallback and per-language results. Other source APIs are unchanged.
+
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
 ## 1.1.0 — 2026-10-23

@@ -16,7 +16,7 @@ func main() {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
-	result, err := client.YouTube.Transcript(ctx, flashdata.YouTubeTranscriptInput{VideoID: "dQw4w9WgXcQ", Params: &flashdata.YouTubeTranscriptParams{Language: flashdata.Ptr("en"), Auto: flashdata.Ptr(true)}})
+	result, err := client.YouTube.Transcript(ctx, flashdata.YouTubeTranscriptInput{VideoID: "dQw4w9WgXcQ", Params: &flashdata.YouTubeTranscriptParams{Languages: []string{"en", "es"}, Auto: flashdata.Ptr(true)}})
 	if err != nil {
 		log.Fatal(err)
 	}
