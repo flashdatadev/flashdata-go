@@ -1,8 +1,8 @@
 # FlashData Go
 
-转录与字幕的多语言请求需要 1.2.0 或更新版本。
+临时存储凭据（`session_token`）需要 1.3.0 或更新版本。转录与字幕的多语言请求需要 1.2.0 或更新版本。
 
-[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [Go 参考](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.2.0) · [价格](https://flashdata.dev/pricing)
+[English](README.md) · [FlashData 官网](https://flashdata.dev) · [API 文档](https://flashdata.dev/docs) · [Go 参考](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.3.0) · [价格](https://flashdata.dev/pricing)
 
 **为 Go 应用接入 Google 搜索和 YouTube 数据。** [FlashData](https://flashdata.dev) 通过统一 API 提供结构化搜索结果、视频元数据、已有字幕和云存储媒体交付。使用本 SDK 为 AI 助手提供网页上下文、研究视频，或构建处理大量视频 ID 的数据流水线。
 
@@ -30,7 +30,7 @@
 需要 **Go 1.25+**。在应用的 Go 模块中运行：
 
 ```bash
-go get github.com/flashdatadev/flashdata-go@v1.2.0
+go get github.com/flashdatadev/flashdata-go@v1.3.0
 ```
 
 ## 在新项目中完成第一次搜索
@@ -41,7 +41,7 @@ go get github.com/flashdatadev/flashdata-go@v1.2.0
 mkdir flashdata-demo
 cd flashdata-demo
 go mod init example.com/flashdata-demo
-go get github.com/flashdatadev/flashdata-go@v1.2.0
+go get github.com/flashdatadev/flashdata-go@v1.3.0
 ```
 
 将以下内容保存为 `main.go`：
@@ -425,4 +425,4 @@ func main() {
 
 SDK 不会自动重试付费查询或任务创建。等待之前请持久化已受理的任务 ID；提交结果不确定时，先核对状态，再决定是否创建替代任务。详见[错误、超时和 HTTP 配置](docs/api-reference.md#errors-timeouts-and-http-transport)以及[批量恢复](docs/bulk.md)。
 
-[API 文档](https://flashdata.dev/docs) · [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.2.0) · [参与贡献与测试](CONTRIBUTING.md) · [版本说明](docs/release-notes-1.2.0.md) · [安全](SECURITY.md) · [MIT 许可](LICENSE)
+[API 文档](https://flashdata.dev/docs) · [pkg.go.dev](https://pkg.go.dev/github.com/flashdatadev/flashdata-go@v1.3.0) · [参与贡献与测试](CONTRIBUTING.md) · [版本说明](docs/release-notes-1.3.0.md) · [安全](SECURITY.md) · [MIT 许可](LICENSE)

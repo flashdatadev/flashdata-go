@@ -78,7 +78,7 @@ func (e *JobPausedError) Error() string {
 
 var secretURL = regexp.MustCompile(`https?://[^\s<>"']+`)
 var secretKey = regexp.MustCompile(`(?i)\bfd_[a-z0-9_-]+`)
-var secretField = regexp.MustCompile(`(?i)(access_key|secret_key|api_key|apiKey|sas_token|private_key|setupCredential|handoffProof|registrationProof)["'\s:=]+[^\s,;}]+`)
+var secretField = regexp.MustCompile(`(?i)(access_key|secret_key|session_token|sessionToken|api_key|apiKey|sas_token|private_key|setupCredential|handoffProof|registrationProof)["'\s:=]+[^\s,;}]+`)
 
 func safeText(s string) string {
 	s = secretURL.ReplaceAllString(s, "[redacted URL]")
@@ -124,7 +124,7 @@ func secretValues(body any) []string {
 		case map[string]any:
 			for k, x := range v {
 				switch strings.ToLower(strings.ReplaceAll(k, "_", "")) {
-				case "apikey", "accesskey", "secretkey", "privatekey", "sastoken", "authorization", "setupcredential", "handoffproof", "registrationproof":
+				case "apikey", "accesskey", "secretkey", "sessiontoken", "privatekey", "sastoken", "authorization", "setupcredential", "handoffproof", "registrationproof":
 					if s, ok := x.(string); ok {
 						values = append(values, s)
 					}

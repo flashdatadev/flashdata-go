@@ -2,12 +2,12 @@
 
 [FlashData](https://flashdata.dev) · [API documentation](https://flashdata.dev/docs)
 
-Install with `go get github.com/flashdatadev/flashdata-go@v1.2.0` (Go 1.25+).
-Version 1.2.0 adds multiple transcript/caption languages and per-language results.
-Read the [release notes](release-notes-1.2.0.md). Existing single-language calls and
-JSON response defaults remain compatible.
+Install with `go get github.com/flashdatadev/flashdata-go@v1.3.0` (Go 1.25+).
+Version 1.3.0 adds temporary storage credentials through `session_token` for
+S3, S3-compatible storage, OSS, COS, BOS and TOS. Read the
+[release notes](release-notes-1.3.0.md). Existing storage configurations remain compatible.
 
-The [GitHub release](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.2.0)
+The [GitHub release](https://github.com/flashdatadev/flashdata-go/releases/tag/v1.3.0)
 includes the canonical Go module ZIP, `.mod` and `.info` files, both READMEs,
 release notes, a build report and `SHA256SUMS`. The tag, module archive and attached
 documentation identify the same source commit. Go modules are distributed through

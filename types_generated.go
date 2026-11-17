@@ -828,6 +828,7 @@ type YouTubeDownloadParamsStorage struct {
 	ObjectPrefix   *string                                     `json:"object_prefix,omitempty"`
 	AccessKey      *string                                     `json:"access_key,omitempty"`
 	SecretKey      *string                                     `json:"secret_key,omitempty"`
+	SessionToken   *string                                     `json:"session_token,omitempty"`
 	EndpointURL    *string                                     `json:"endpoint_url,omitempty"`
 	Region         *string                                     `json:"region,omitempty"`
 	AccountName    *string                                     `json:"account_name,omitempty"`

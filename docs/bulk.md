@@ -23,6 +23,33 @@ Use the convenient `Storage` and `ServiceAccount` aliases or their generated ful
 
 Data-result default prefixes are frozen to the UTC creation date. Customer result objects use `<prefix>/<source>/<bulkId>/results/part-NNNNNNNN.jsonl.gz`, followed by a manifest. Download object prefixes can include `YYYYMMDD` tokens resolved at upload time. Internal signed results remain available for 24 hours. Input upload expires after 15 minutes; the SDK performs a bounded, credential-free PUT pinned to the authenticated result origin without following redirects. It uses the caller's stream or a regular file and never creates an empty upload automatically.
 
+## Temporary STS credentials
+
+S3, S3-compatible providers that issue temporary credentials, OSS, COS, BOS and TOS
+accept a session token with the matching temporary access/secret key pair:
+
+```go
+storage := flashdata.Storage{
+    StorageType: "s3",
+    StorageURL: "your-media-bucket",
+    Region: flashdata.Ptr("us-east-1"),
+    AccessKey: flashdata.Ptr("YOUR_TEMPORARY_ACCESS_KEY"),
+    SecretKey: flashdata.Ptr("YOUR_TEMPORARY_SECRET_KEY"),
+    SessionToken: flashdata.Ptr("YOUR_SESSION_TOKEN"),
+}
+```
+
+Pass this value as `YouTubeDownloadParams.Storage`, bulk `options.storage`, or bulk
+data `options.result_storage`. Leave `SessionToken` nil for long-term credentials.
+AWS/BOS/TOS call it SessionToken, OSS calls it SecurityToken, and COS calls it Token
+(paired with TmpSecretId/TmpSecretKey). GCS still uses `ServiceAccount`; Azure uses
+`SasToken`.
+
+Keep all three temporary values valid through queueing, processing, upload and
+retries. FlashData does not refresh them. A paused data bulk job whose scan is
+complete accepts renewed `access_key`, `secret_key` and `session_token` inside
+`UpdateBulkJobRequest.Options["result_storage"]`; resume after updating them.
+
 ## State and recovery
 
 | State | Caller action |

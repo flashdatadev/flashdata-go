@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0 — 2026-11-17
+
+- Add optional `Storage.SessionToken` (`session_token`) for temporary credentials
+  issued by S3, S3-compatible providers, OSS, COS, BOS and TOS.
+- Support the token in single/batch downloads and bulk storage delivery, and redact
+  it from diagnostics and echoed API errors.
+
 ## 1.2.0 — 2026-11-05
 
 - Support single or multiple transcript/caption languages, omitted-language fallback and per-language results. Other source APIs are unchanged.

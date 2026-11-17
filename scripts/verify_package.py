@@ -20,7 +20,7 @@ from release_manifest import load_release_files, write_zip_member
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE = "github.com/flashdatadev/flashdata-go"
-VERSION = "v1.2.0"
+VERSION = "v1.3.0"
 
 
 def main():
